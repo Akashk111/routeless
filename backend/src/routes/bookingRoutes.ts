@@ -1,11 +1,12 @@
 import { Router, Request, Response } from 'express';
 import { db } from '../db/database.js';
+import { getStringParam } from '../utils/params.js';
 
 const router = Router();
 
 // GET all bookings (optionally filtered by studentId)
 router.get('/', (req: Request, res: Response) => {
-  const studentId = req.query.studentId as string;
+  const studentId = typeof req.query.studentId === 'string' ? req.query.studentId : undefined;
   const bookings = db.getBookings(studentId);
   res.json({ count: bookings.length, bookings });
 });
@@ -55,7 +56,11 @@ router.post('/', (req: Request, res: Response) => {
 
 // CANCEL a booking (increments seat availability)
 router.post('/:id/cancel', (req: Request, res: Response) => {
-  const result = db.cancelBooking(req.params.id);
+  const id = getStringParam(req.params.id);
+  if (!id) {
+    return res.status(400).json({ error: 'Valid booking ID is required.' });
+  }
+  const result = db.cancelBooking(id);
   if (!result.success) {
     return res.status(400).json({ error: result.error });
   }

@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { store } from '../data/store.js';
+import { getStringParam } from '../utils/params.js';
 
 const router = Router();
 
@@ -35,8 +36,10 @@ router.post('/', (req: Request, res: Response) => {
 
 // UPDATE report status (Admin)
 router.patch('/:id/status', (req: Request, res: Response) => {
+  const id = getStringParam(req.params.id);
+  if (!id) return res.status(400).json({ error: 'Valid report ID is required' });
   const { status, adminNotes } = req.body;
-  const updated = store.updateReportStatus(req.params.id, status, adminNotes);
+  const updated = store.updateReportStatus(id, status, adminNotes);
   if (!updated) return res.status(404).json({ error: 'Report not found' });
   res.json({ report: updated });
 });

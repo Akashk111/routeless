@@ -2,7 +2,11 @@ import { User, Bus, Route, TravelRequest, TransportReport, AppNotification, BusS
 import { db, Booking } from '../db/database.js';
 
 class DataStore {
-  // Database Delegation
+  // Database Delegation & Reset
+  reset(): void {
+    db.reseed();
+  }
+
   getBuses(): Bus[] { return db.getBuses(); }
   getBusById(id: string): Bus | null { return db.getBusById(id); }
   addBus(bus: Bus): Bus { return db.addBus(bus); }

@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { store } from '../data/store.js';
 import { busSimulator } from '../services/busSimulator.js';
+import { getStringParam } from '../utils/params.js';
 
 const router = Router();
 
@@ -30,27 +31,33 @@ router.post('/tick', (_req: Request, res: Response) => {
 
 // GET bus location (TASK 7: GET /api/buses/:id/location)
 router.get('/:id/location', (req: Request, res: Response) => {
-  const loc = store.getBusLocation(req.params.id);
+  const id = getStringParam(req.params.id);
+  if (!id) return res.status(400).json({ error: 'Valid bus ID is required' });
+  const loc = store.getBusLocation(id);
   if (!loc) return res.status(404).json({ error: 'Bus location not found' });
   res.json({ location: loc });
 });
 
 // GET bus by id
 router.get('/:id', (req: Request, res: Response) => {
-  const bus = store.getBusById(req.params.id);
+  const id = getStringParam(req.params.id);
+  if (!id) return res.status(400).json({ error: 'Valid bus ID is required' });
+  const bus = store.getBusById(id);
   if (!bus) return res.status(404).json({ error: 'Bus not found' });
   res.json({ bus });
 });
 
 // REAL GPS TELEMETRY INGESTION ENDPOINT (Section 6: Real GPS integration architecture)
 router.post('/:id/telemetry', (req: Request, res: Response) => {
+  const id = getStringParam(req.params.id);
+  if (!id) return res.status(400).json({ error: 'Valid bus ID is required' });
   const { latitude, longitude, speedKmH, heading, timestamp } = req.body;
 
   if (latitude === undefined || longitude === undefined || speedKmH === undefined) {
     return res.status(400).json({ error: 'latitude, longitude, and speedKmH are required.' });
   }
 
-  const success = busSimulator.updateTelemetry(req.params.id, {
+  const success = busSimulator.updateTelemetry(id, {
     latitude: Number(latitude),
     longitude: Number(longitude),
     speedKmH: Number(speedKmH),
@@ -64,7 +71,7 @@ router.post('/:id/telemetry', (req: Request, res: Response) => {
     });
   }
 
-  const updatedBus = store.getBusById(req.params.id);
+  const updatedBus = store.getBusById(id);
   res.json({
     success: true,
     message: 'Hardware GPS Telemetry updated successfully.',
@@ -74,7 +81,9 @@ router.post('/:id/telemetry', (req: Request, res: Response) => {
 
 // UPDATE bus (Admin / Operator)
 router.patch('/:id', (req: Request, res: Response) => {
-  const updated = store.updateBus(req.params.id, req.body);
+  const id = getStringParam(req.params.id);
+  if (!id) return res.status(400).json({ error: 'Valid bus ID is required' });
+  const updated = store.updateBus(id, req.body);
   if (!updated) return res.status(404).json({ error: 'Bus not found' });
 
   // If status is changed to Cancelled, broadcast alert notification
@@ -117,7 +126,9 @@ router.post('/', (req: Request, res: Response) => {
 
 // DELETE bus
 router.delete('/:id', (req: Request, res: Response) => {
-  const deleted = store.deleteBus(req.params.id);
+  const id = getStringParam(req.params.id);
+  if (!id) return res.status(400).json({ error: 'Valid bus ID is required' });
+  const deleted = store.deleteBus(id);
   if (!deleted) return res.status(404).json({ error: 'Bus not found' });
   res.json({ success: true, deleted });
 });

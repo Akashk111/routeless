@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { store } from '../data/store.js';
 import { generateDemandPrediction } from '../services/demandPredictor.js';
+import { Bus } from '../types/index.js';
 
 const router = Router();
 
@@ -148,15 +149,23 @@ router.post('/trigger-scenario', (req: Request, res: Response) => {
 router.post('/allocate-bus', (req: Request, res: Response) => {
   const { routeId = 'route-14b', busNumber = 'KA-19-F-9901', operator = 'KSRTC Special Student Express' } = req.body;
 
-  const allocatedBus = {
+  const allocatedBus: Bus = {
     id: `bus-alloc-${Date.now()}`,
-    busNumber,
-    operator,
-    routeId,
+    busNumber: String(busNumber),
+    registrationNumber: String(busNumber),
+    busName: 'KSRTC Relief Express',
+    busType: 'Express',
+    operator: String(operator),
+    routeId: String(routeId),
+    routeNumber: '14B',
     routeName: '14B (Special Relief Shuttle)',
+    origin: 'Kinnigoli Bus Stand',
+    destination: 'Moodbidri Bus Stand',
+    stops: ['Kinnigoli Bus Stand', "Mijar Alva's Campus", 'Moodbidri Bus Stand'],
     capacity: 35,
+    occupiedSeats: 0,
     availableSeats: 35,
-    status: 'On Time' as const,
+    status: 'On Time',
     currentLat: 13.0854,
     currentLng: 74.8722,
     heading: 90,
@@ -164,9 +173,19 @@ router.post('/allocate-bus', (req: Request, res: Response) => {
     lastUpdated: new Date().toISOString(),
     currentStopIndex: 0,
     delayMinutes: 0,
+    nextStopName: "Mijar Alva's Campus",
+    distanceToNextStopKm: 6.2,
+    remainingDistanceKm: 16.5,
+    etaNextStop: '10 mins',
+    etaDestination: '25 mins',
+    fareRupees: 35,
+    scheduledDeparture: '08:15',
+    scheduledArrival: '08:45',
+    totalDistanceKm: 16.5,
     driverName: 'Mohan Kumar (Depot Standby)',
     driverPhone: '+91 94481 00223',
-    isSimulatedGps: true
+    isSimulatedGps: true,
+    imageUrl: '/images/buses/ksrtc-express.svg'
   };
 
   store.addBus(allocatedBus);

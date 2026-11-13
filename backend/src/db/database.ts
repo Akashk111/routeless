@@ -1,4 +1,4 @@
-import { DatabaseSync } from 'node:sqlite';
+import { DatabaseSync, SQLInputValue, SQLOutputValue } from 'node:sqlite';
 import path from 'node:path';
 import fs from 'node:fs';
 import {
@@ -43,6 +43,80 @@ export interface Booking {
   farePaid: number;
   status: 'CONFIRMED' | 'CANCELLED';
   bookedAt: string;
+}
+
+// Type-safe row mapping functions for node:sqlite output
+function mapPassengerRow(row: Record<string, SQLOutputValue>): PassengerRecord {
+  return {
+    id: String(row.id ?? ''),
+    tripId: String(row.tripId ?? ''),
+    busNumber: String(row.busNumber ?? ''),
+    studentId: String(row.studentId ?? ''),
+    studentName: String(row.studentName ?? ''),
+    seatNumber: Number(row.seatNumber ?? 0),
+    boardingStop: String(row.boardingStop ?? ''),
+    destinationStop: String(row.destinationStop ?? ''),
+    farePaid: Number(row.farePaid ?? 0),
+    bookingDate: String(row.bookingDate ?? ''),
+    status: (row.status as PassengerRecord['status']) || 'CONFIRMED'
+  };
+}
+
+function mapBookingRow(row: Record<string, SQLOutputValue>): Booking {
+  return {
+    id: String(row.id ?? ''),
+    bookingReference: String(row.bookingReference ?? ''),
+    tripId: String(row.tripId ?? ''),
+    busId: String(row.busId ?? ''),
+    busNumber: String(row.busNumber ?? ''),
+    registrationNumber: String(row.registrationNumber ?? ''),
+    routeNumber: String(row.routeNumber ?? ''),
+    fromStop: String(row.fromStop ?? ''),
+    toStop: String(row.toStop ?? ''),
+    departureTime: String(row.departureTime ?? ''),
+    arrivalTime: String(row.arrivalTime ?? ''),
+    travelDate: String(row.travelDate ?? ''),
+    studentId: String(row.studentId ?? ''),
+    passengerName: String(row.passengerName ?? ''),
+    seatNumber: Number(row.seatNumber ?? 0),
+    farePaid: Number(row.farePaid ?? 0),
+    status: (row.status as Booking['status']) || 'CONFIRMED',
+    bookedAt: String(row.bookedAt ?? '')
+  };
+}
+
+function mapRequestRow(row: Record<string, SQLOutputValue>): TravelRequest {
+  return {
+    id: String(row.id ?? ''),
+    studentId: String(row.studentId ?? ''),
+    studentName: String(row.studentName ?? ''),
+    studentVillage: String(row.studentVillage ?? ''),
+    origin: String(row.origin ?? ''),
+    destination: String(row.destination ?? ''),
+    travelDate: String(row.travelDate ?? ''),
+    departureWindow: String(row.departureWindow ?? ''),
+    passengerCount: Number(row.passengerCount ?? 1),
+    status: (row.status as TravelRequest['status']) || 'PENDING',
+    notes: row.notes != null ? String(row.notes) : undefined,
+    createdAt: String(row.createdAt ?? '')
+  };
+}
+
+function mapReportRow(row: Record<string, SQLOutputValue>): TransportReport {
+  return {
+    id: String(row.id ?? ''),
+    studentId: String(row.studentId ?? ''),
+    studentName: String(row.studentName ?? ''),
+    routeId: row.routeId != null ? String(row.routeId) : undefined,
+    routeName: row.routeName != null ? String(row.routeName) : undefined,
+    busNumber: row.busNumber != null ? String(row.busNumber) : undefined,
+    category: (row.category as TransportReport['category']) || 'Other',
+    location: String(row.location ?? ''),
+    description: String(row.description ?? ''),
+    status: (row.status as TransportReport['status']) || 'PENDING',
+    adminNotes: row.adminNotes != null ? String(row.adminNotes) : undefined,
+    createdAt: String(row.createdAt ?? '')
+  };
 }
 
 class SQLiteDatabase {
@@ -510,13 +584,13 @@ class SQLiteDatabase {
     for (const n of INITIAL_NOTIFICATIONS) {
       insertNotif.run(
         n.id,
-        n.targetRole,
+        n.targetRole ?? null,
         n.title,
         n.message,
         n.type,
         n.read ? 1 : 0,
         n.createdAt,
-        n.actionUrl || null
+        n.actionUrl ?? null
       );
     }
 
@@ -649,35 +723,35 @@ class SQLiteDatabase {
 
     update.run(
       merged.busNumber,
-      merged.registrationNumber,
-      merged.busName,
-      merged.busType,
-      merged.operator,
-      merged.routeId,
-      merged.routeName,
-      merged.origin,
-      merged.destination,
-      merged.capacity,
-      merged.occupiedSeats,
-      merged.availableSeats,
-      merged.fareRupees,
-      merged.status,
-      merged.currentLat,
-      merged.currentLng,
-      merged.heading,
-      merged.speedKmH,
+      merged.registrationNumber || '',
+      merged.busName || '',
+      merged.busType || 'KSRTC Ordinary',
+      merged.operator || '',
+      merged.routeId || '',
+      merged.routeName || '',
+      merged.origin || '',
+      merged.destination || '',
+      merged.capacity ?? 50,
+      merged.occupiedSeats ?? 0,
+      merged.availableSeats ?? 50,
+      merged.fareRupees ?? 30,
+      merged.status || 'On Time',
+      merged.currentLat ?? 0,
+      merged.currentLng ?? 0,
+      merged.heading ?? 0,
+      merged.speedKmH ?? 0,
       merged.lastUpdated,
-      merged.currentStopIndex,
-      merged.delayMinutes,
-      merged.nextStopName,
-      merged.distanceToNextStopKm,
-      merged.remainingDistanceKm,
-      merged.etaNextStop,
-      merged.etaDestination,
-      merged.driverName,
-      merged.driverPhone,
+      merged.currentStopIndex ?? 0,
+      merged.delayMinutes ?? 0,
+      merged.nextStopName || '',
+      merged.distanceToNextStopKm ?? 0,
+      merged.remainingDistanceKm ?? 0,
+      merged.etaNextStop || '',
+      merged.etaDestination || '',
+      merged.driverName ?? null,
+      merged.driverPhone ?? null,
       merged.isSimulatedGps ? 1 : 0,
-      merged.imageUrl,
+      merged.imageUrl ?? null,
       JSON.stringify(merged.stops || []),
       id
     );
@@ -824,12 +898,13 @@ class SQLiteDatabase {
 
   getPassengers(tripId?: string): PassengerRecord[] {
     let sql = 'SELECT * FROM passengers';
-    const params: any[] = [];
+    const params: SQLInputValue[] = [];
     if (tripId && tripId !== 'all') {
       sql += ' WHERE tripId = ?';
       params.push(tripId);
     }
-    return this.db.prepare(sql).all(...params) as PassengerRecord[];
+    const rows = this.db.prepare(sql).all(...params) as Record<string, SQLOutputValue>[];
+    return rows.map(mapPassengerRow);
   }
 
   // ==========================================
@@ -837,13 +912,14 @@ class SQLiteDatabase {
   // ==========================================
   getBookings(studentId?: string): Booking[] {
     let sql = 'SELECT * FROM bookings';
-    const params: any[] = [];
+    const params: SQLInputValue[] = [];
     if (studentId && studentId !== 'all') {
       sql += ' WHERE studentId = ?';
       params.push(studentId);
     }
     sql += ' ORDER BY bookedAt DESC';
-    return this.db.prepare(sql).all(...params) as Booking[];
+    const rows = this.db.prepare(sql).all(...params) as Record<string, SQLOutputValue>[];
+    return rows.map(mapBookingRow);
   }
 
   createBooking(data: {
@@ -1013,7 +1089,8 @@ class SQLiteDatabase {
   // REQUESTS, REPORTS, NOTIFICATIONS, USERS
   // ==========================================
   getRequests(): TravelRequest[] {
-    return this.db.prepare('SELECT * FROM requests ORDER BY createdAt DESC').all() as TravelRequest[];
+    const rows = this.db.prepare('SELECT * FROM requests ORDER BY createdAt DESC').all() as Record<string, SQLOutputValue>[];
+    return rows.map(mapRequestRow);
   }
 
   addRequest(req: TravelRequest): TravelRequest {
@@ -1043,7 +1120,8 @@ class SQLiteDatabase {
   }
 
   getReports(): TransportReport[] {
-    return this.db.prepare('SELECT * FROM reports ORDER BY createdAt DESC').all() as TransportReport[];
+    const rows = this.db.prepare('SELECT * FROM reports ORDER BY createdAt DESC').all() as Record<string, SQLOutputValue>[];
+    return rows.map(mapReportRow);
   }
 
   addReport(rep: TransportReport): TransportReport {
@@ -1078,16 +1156,22 @@ class SQLiteDatabase {
 
   getNotifications(role?: string): AppNotification[] {
     let sql = 'SELECT * FROM notifications';
-    const params: any[] = [];
+    const params: SQLInputValue[] = [];
     if (role && role !== 'all') {
-      sql += ' WHERE targetRole = ? OR targetRole = "all"';
+      sql += " WHERE targetRole = ? OR targetRole = 'all'";
       params.push(role);
     }
     sql += ' ORDER BY createdAt DESC';
-    const rows = this.db.prepare(sql).all(...params) as any[];
+    const rows = this.db.prepare(sql).all(...params) as Record<string, SQLOutputValue>[];
     return rows.map(n => ({
-      ...n,
-      read: Boolean(n.read)
+      id: String(n.id ?? ''),
+      targetRole: (n.targetRole as AppNotification['targetRole']) || 'all',
+      title: String(n.title ?? ''),
+      message: String(n.message ?? ''),
+      type: (n.type as AppNotification['type']) || 'info',
+      read: Boolean(n.read),
+      createdAt: String(n.createdAt ?? ''),
+      actionUrl: n.actionUrl != null ? String(n.actionUrl) : undefined
     }));
   }
 
@@ -1097,13 +1181,13 @@ class SQLiteDatabase {
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `).run(
       n.id,
-      n.targetRole,
+      n.targetRole ?? null,
       n.title,
       n.message,
       n.type,
       n.read ? 1 : 0,
       n.createdAt,
-      n.actionUrl || null
+      n.actionUrl ?? null
     );
     return n;
   }

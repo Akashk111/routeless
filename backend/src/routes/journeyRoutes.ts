@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { store } from '../data/store.js';
-import { planJourneys } from '../algorithms/dijkstra.js';
+import { planJourneys, PlanOptions } from '../algorithms/dijkstra.js';
+import { getStringParam, getQueryString } from '../utils/params.js';
 
 const router = Router();
 
@@ -11,7 +12,9 @@ router.get('/routes', (_req: Request, res: Response) => {
 
 // GET single route by id
 router.get('/routes/:id', (req: Request, res: Response) => {
-  const route = store.getRouteById(req.params.id);
+  const id = getStringParam(req.params.id);
+  if (!id) return res.status(400).json({ error: 'Valid route ID is required' });
+  const route = store.getRouteById(id);
   if (!route) return res.status(404).json({ error: 'Route not found' });
   res.json({ route });
 });
@@ -33,32 +36,36 @@ router.post('/routes', (req: Request, res: Response) => {
 });
 
 router.patch('/routes/:id', (req: Request, res: Response) => {
-  const updated = store.updateRoute(req.params.id, req.body);
+  const id = getStringParam(req.params.id);
+  if (!id) return res.status(400).json({ error: 'Valid route ID is required' });
+  const updated = store.updateRoute(id, req.body);
   if (!updated) return res.status(404).json({ error: 'Route not found' });
   res.json({ route: updated });
 });
 
 // DELETE route
 router.delete('/routes/:id', (req: Request, res: Response) => {
-  const deleted = store.deleteRoute(req.params.id);
+  const id = getStringParam(req.params.id);
+  if (!id) return res.status(400).json({ error: 'Valid route ID is required' });
+  const deleted = store.deleteRoute(id);
   if (!deleted) return res.status(404).json({ error: 'Route not found' });
   res.json({ success: true, deleted });
 });
 
 // PLAN JOURNEYS (Graph Dijkstra Route Optimization & Timetables)
 const handleJourneyPlan = (req: Request, res: Response) => {
-  const origin = (req.query.origin as string) || (req.query.from as string) || 'Kinnigoli';
-  const destination = (req.query.destination as string) || (req.query.to as string) || 'Moodbidri';
-  const time = (req.query.time as string) || (req.query.departureTime as string) || '07:30 AM';
-  const travelDate = (req.query.travelDate as string) || (req.query.date as string) || '13/11/2026';
+  const origin = getQueryString(req.query.origin || req.query.from, 'Kinnigoli');
+  const destination = getQueryString(req.query.destination || req.query.to, 'Moodbidri');
+  const time = getQueryString(req.query.time || req.query.departureTime, '07:30 AM');
+  const travelDate = getQueryString(req.query.travelDate || req.query.date, '13/11/2026');
 
-  const sort = req.query.sort as any;
-  const busType = req.query.busType as string;
-  const maxFare = req.query.maxFare ? Number(req.query.maxFare) : undefined;
-  const minSeats = req.query.minSeats ? Number(req.query.minSeats) : undefined;
-  const maxTransfers = req.query.maxTransfers !== undefined && req.query.maxTransfers !== '' ? Number(req.query.maxTransfers) : undefined;
-  const maxDistance = req.query.maxDistance ? Number(req.query.maxDistance) : undefined;
-  const operator = req.query.operator as string;
+  const sort = typeof req.query.sort === 'string' ? (req.query.sort as PlanOptions['sort']) : undefined;
+  const busType = typeof req.query.busType === 'string' ? req.query.busType : undefined;
+  const maxFare = typeof req.query.maxFare === 'string' && req.query.maxFare.trim() ? Number(req.query.maxFare) : undefined;
+  const minSeats = typeof req.query.minSeats === 'string' && req.query.minSeats.trim() ? Number(req.query.minSeats) : undefined;
+  const maxTransfers = typeof req.query.maxTransfers === 'string' && req.query.maxTransfers.trim() ? Number(req.query.maxTransfers) : undefined;
+  const maxDistance = typeof req.query.maxDistance === 'string' && req.query.maxDistance.trim() ? Number(req.query.maxDistance) : undefined;
+  const operator = typeof req.query.operator === 'string' ? req.query.operator : undefined;
 
   const journeys = planJourneys(origin, destination, time, {
     travelDate,
