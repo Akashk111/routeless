@@ -113,6 +113,7 @@ export function planJourneys(
 
   // Day of week check if travelDate is supplied (e.g. 13/11/2026 -> Friday)
   const dayOfWeek = options.travelDate ? parseDateToDayOfWeek(options.travelDate) : null;
+  const isSunday = dayOfWeek === 0 || (dayOfWeek as any) === 'Sunday';
 
   const getBusesForRoute = (routeId: string): Bus[] => {
     const list = buses.filter(b => b.routeId === routeId);
@@ -124,7 +125,7 @@ export function planJourneys(
   // ==========================================
   for (const route of routes) {
     // Check operating days
-    if (dayOfWeek && route.operatingDays === 'Mon-Sat' && dayOfWeek === 'Sunday') {
+    if (isSunday && route.operatingDays === 'Mon-Sat') {
       continue;
     }
 
@@ -154,6 +155,11 @@ export function planJourneys(
       const intermediateStops = route.stops.slice(fromIdx, toIdx + 1).map(s => s.name);
       const routeBuses = getBusesForRoute(route.id);
 
+      // Travel time from route start to the boarding stop
+      const offsetToOriginMin = Math.round(
+        (route.estimatedDurationMin / Math.max(1, route.stops.length - 1)) * fromIdx
+      );
+
       // Search through each schedule entry
       for (const sched of route.schedule) {
         const bus = routeBuses.find(b => b.id === sched.busId) || routeBuses[0];
@@ -163,7 +169,8 @@ export function planJourneys(
         // Skip completely cancelled buses
         if (isCancelled) continue;
 
-        const depTime = sched.departureTime;
+        // Actual departure time at the origin stop (offset from route departure)
+        const depTime = addMinutesToTimeString(sched.departureTime, offsetToOriginMin);
         const arrTime = addMinutesToTimeString(depTime, legDuration + (bus.delayMinutes || 0));
 
         let statusSummary: OptimizedJourney['statusSummary'] = 'Optimal';
@@ -243,7 +250,7 @@ export function planJourneys(
   // 2. ONE-TRANSFER CONNECTING JOURNEYS
   // ==========================================
   for (const r1 of routes) {
-    if (dayOfWeek && r1.operatingDays === 'Mon-Sat' && dayOfWeek === 'Sunday') continue;
+    if (isSunday && r1.operatingDays === 'Mon-Sat') continue;
 
     const fromIdx = findMatchingStopInRoute(r1, originQuery);
     if (fromIdx === -1) continue;
@@ -254,7 +261,7 @@ export function planJourneys(
 
       for (const r2 of routes) {
         if (r1.id === r2.id) continue;
-        if (dayOfWeek && r2.operatingDays === 'Mon-Sat' && dayOfWeek === 'Sunday') continue;
+        if (isSunday && r2.operatingDays === 'Mon-Sat') continue;
 
         const hubIdxInR2 = findMatchingStopInRoute(r2, hubName);
         const toIdxInR2 = findMatchingStopInRoute(r2, destQuery);
@@ -296,12 +303,15 @@ export function planJourneys(
           const r1Buses = getBusesForRoute(r1.id);
           const r2Buses = getBusesForRoute(r2.id);
 
-          // Find synchronized schedules where Leg 2 departs at least 5 mins AFTER Leg 1 arrives
+          const offset1 = Math.round((r1.estimatedDurationMin / Math.max(1, r1.stops.length - 1)) * fromIdx);
+          const offsetHub = Math.round((r2.estimatedDurationMin / Math.max(1, r2.stops.length - 1)) * hubIdxInR2);
+
+          // Find synchronized schedules where Leg 2 departs at least 3 mins AFTER Leg 1 arrives
           for (const s1 of r1.schedule) {
             const bus1 = r1Buses.find(b => b.id === s1.busId) || r1Buses[0];
             if (bus1.status === 'Cancelled') continue;
 
-            const depTime1 = s1.departureTime;
+            const depTime1 = addMinutesToTimeString(s1.departureTime, offset1);
             const arrTime1 = addMinutesToTimeString(depTime1, leg1Duration + (bus1.delayMinutes || 0));
             const arr1Minutes = parseTimeToMinutes(arrTime1);
 
@@ -309,14 +319,14 @@ export function planJourneys(
               const bus2 = r2Buses.find(b => b.id === s2.busId) || r2Buses[0];
               if (bus2.status === 'Cancelled') continue;
 
-              const depTime2 = s2.departureTime;
+              const depTime2 = addMinutesToTimeString(s2.departureTime, offsetHub);
               const dep2Minutes = parseTimeToMinutes(depTime2);
               const waitingMin = dep2Minutes - arr1Minutes;
 
-              // Transfer buffer: Minimum 5 minutes, Maximum 55 minutes
-              if (waitingMin >= 5 && waitingMin <= 55) {
+              // Transfer buffer: Minimum 3 minutes, Maximum 60 minutes
+              if (waitingMin >= 3 && waitingMin <= 60) {
                 const arrTime2 = addMinutesToTimeString(depTime2, leg2Duration + (bus2.delayMinutes || 0));
-                const totalDuration = leg1Duration + (bus1.delayMinutes || 0) + waitingMin + leg2Duration + (bus2.delayMinutes || 0);
+                const totalDuration = (dep2Minutes - parseTimeToMinutes(depTime1)) + leg2Duration + (bus2.delayMinutes || 0);
 
                 const inter1 = r1.stops.slice(fromIdx, i + 1).map(s => s.name);
                 const inter2 = r2.stops.slice(hubIdxInR2, toIdxInR2 + 1).map(s => s.name);

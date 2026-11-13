@@ -55,6 +55,10 @@ class SQLiteDatabase {
     }
     const dbPath = path.join(dbDir, 'routeless.sqlite');
     this.db = new DatabaseSync(dbPath);
+    this.db.exec(`
+      PRAGMA journal_mode = WAL;
+      PRAGMA busy_timeout = 5000;
+    `);
     this.initTables();
     this.seedIfEmpty();
   }
@@ -245,12 +249,32 @@ class SQLiteDatabase {
     `);
   }
 
+  public reseed() {
+    console.log('🔄 Reseeding SQLite Persistent Database with latest ROUTELESS transport network...');
+    this.db.exec(`
+      DELETE FROM notifications;
+      DELETE FROM reports;
+      DELETE FROM requests;
+      DELETE FROM passengers;
+      DELETE FROM trips;
+      DELETE FROM buses;
+      DELETE FROM routes;
+      DELETE FROM stops;
+      DELETE FROM users;
+    `);
+    this.seedAll();
+  }
+
   private seedIfEmpty() {
     const busCountRow = this.db.prepare('SELECT COUNT(*) as c FROM buses').get() as { c: number };
-    if (busCountRow && busCountRow.c > 0) {
-      return; // Already populated
+    const routeCountRow = this.db.prepare('SELECT COUNT(*) as c FROM routes').get() as { c: number };
+    if (busCountRow && busCountRow.c >= INITIAL_BUSES.length && routeCountRow && routeCountRow.c >= INITIAL_ROUTES.length) {
+      return; // Already populated and up-to-date
     }
+    this.reseed();
+  }
 
+  private seedAll() {
     console.log('📦 Seeding SQLite Persistent Database with ROUTELESS transport network...');
 
     // Users

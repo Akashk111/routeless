@@ -143,6 +143,38 @@ export const INITIAL_ROUTES: Route[] = [
     ]
   },
 
+  // 1-R. Moodbidri to Bajpe to Kateel to Kinnigoli (Return Corridor)
+  {
+    id: 'route-14b-r',
+    routeNumber: '14B',
+    routeName: "Moodbidri ↔ Bajpe ↔ Kateel ↔ Kinnigoli Rural Return",
+    origin: 'Moodbidri',
+    destination: 'Kinnigoli',
+    via: ["Alva's Vidyagiri Gate", 'Ganjimutt', 'Bajpe Rural Cross', 'Kateel Temple'],
+    distanceKm: 28.5,
+    estimatedDurationMin: 55,
+    fareRupees: 35,
+    status: 'Active',
+    operatingDays: 'Daily',
+    busType: 'KSRTC Ordinary',
+    associatedBusIds: ['bus-ka19-1401', 'bus-ka19-1402', 'bus-ka19-1403', 'bus-ka19-1404'],
+    stops: [
+      { ...getStop('s-mbd-1'), sequence: 1, distanceFromStartKm: 0 },
+      { ...getStop('s-alv-1'), sequence: 2, distanceFromStartKm: 2.0 },
+      { ...getStop('s-gan-1'), sequence: 3, distanceFromStartKm: 9.1 },
+      { ...getStop('s-baj-cr'), sequence: 4, distanceFromStartKm: 15.9 },
+      { ...getStop('s-kat-1'), sequence: 5, distanceFromStartKm: 23.7 },
+      { ...getStop('s-kin-1'), sequence: 6, distanceFromStartKm: 28.5 }
+    ],
+    schedule: [
+      { tripId: 'trip-14br-01', departureTime: '06:45', arrivalTime: '07:40', busId: 'bus-ka19-1401', busNumber: 'KA-19-F-1401', registrationNumber: 'KA-19-F-1401', busType: 'KSRTC Ordinary', operator: 'KSRTC Rural Gramina Sarige', fareRupees: 35, capacity: 52, occupiedSeats: 20, availableSeats: 32 },
+      { tripId: 'trip-14br-02', departureTime: '07:15', arrivalTime: '08:10', busId: 'bus-ka19-1402', busNumber: 'KA-19-F-1402', registrationNumber: 'KA-19-F-1402', busType: 'KSRTC Ordinary', operator: 'KSRTC Rural Gramina Sarige', fareRupees: 35, capacity: 52, occupiedSeats: 26, availableSeats: 26 },
+      { tripId: 'trip-14br-03', departureTime: '08:00', arrivalTime: '08:55', busId: 'bus-ka19-1403', busNumber: 'KA-19-F-1403', registrationNumber: 'KA-19-F-1403', busType: 'KSRTC Ordinary', operator: 'KSRTC Rural Gramina Sarige', fareRupees: 35, capacity: 52, occupiedSeats: 35, availableSeats: 17 },
+      { tripId: 'trip-14br-04', departureTime: '08:45', arrivalTime: '09:40', busId: 'bus-ka19-1404', busNumber: 'KA-19-F-1404', registrationNumber: 'KA-19-F-1404', busType: 'KSRTC Ordinary', operator: 'KSRTC Rural Gramina Sarige', fareRupees: 35, capacity: 52, occupiedSeats: 22, availableSeats: 30 },
+      { tripId: 'trip-14br-05', departureTime: '09:30', arrivalTime: '10:25', busId: 'bus-ka19-1401', busNumber: 'KA-19-F-1401', registrationNumber: 'KA-19-F-1401', busType: 'KSRTC Ordinary', operator: 'KSRTC Rural Gramina Sarige', fareRupees: 35, capacity: 52, occupiedSeats: 16, availableSeats: 36 }
+    ]
+  },
+
   // 2. Mangaluru State Bank to Moodbidri
   {
     id: 'route-31m',
@@ -231,7 +263,38 @@ export const INITIAL_ROUTES: Route[] = [
     ],
     schedule: [
       { tripId: 'trip-42u-01', departureTime: '07:00', arrivalTime: '07:55', busId: 'bus-ka20-p-4201', busNumber: 'KA-20-B-4201', registrationNumber: 'KA-20-B-4201', busType: 'Private Route', operator: 'Vishal Coastal Motors', fareRupees: 45, capacity: 45, occupiedSeats: 29, availableSeats: 16 },
-      { tripId: 'trip-42u-02', departureTime: '07:45', arrivalTime: '08:40', busId: 'bus-ka20-p-4202', busNumber: 'KA-20-B-4202', registrationNumber: 'KA-20-B-4202', busType: 'Private Route', operator: 'Canara Star Lines', fareRupees: 45, capacity: 45, occupiedSeats: 37, availableSeats: 8 }
+      { tripId: 'trip-42u-02', departureTime: '07:45', arrivalTime: '08:40', busId: 'bus-ka20-p-4202', busNumber: 'KA-20-B-4202', registrationNumber: 'KA-20-B-4202', busType: 'Private Route', operator: 'Canara Star Lines', fareRupees: 45, capacity: 45, occupiedSeats: 37, availableSeats: 8 },
+      { tripId: 'trip-42u-03', departureTime: '08:30', arrivalTime: '09:25', busId: 'bus-ka20-p-4201', busNumber: 'KA-20-B-4201', registrationNumber: 'KA-20-B-4201', busType: 'Private Route', operator: 'Vishal Coastal Motors', fareRupees: 45, capacity: 45, occupiedSeats: 22, availableSeats: 23 }
+    ]
+  },
+
+  // 4-R. Karkala to Udupi (Return Corridor)
+  {
+    id: 'route-42u-r',
+    routeNumber: '42U',
+    routeName: 'Karkala ↔ Belman ↔ Hiriadka ↔ Manipal ↔ Udupi Service',
+    origin: 'Karkala',
+    destination: 'Udupi',
+    via: ['Belman Junction', 'Hiriadka', 'Manipal Tiger Circle'],
+    distanceKm: 38.2,
+    estimatedDurationMin: 55,
+    fareRupees: 45,
+    status: 'Active',
+    operatingDays: 'Daily',
+    busType: 'Private Route',
+    associatedBusIds: ['bus-ka20-p-4201', 'bus-ka20-p-4202'],
+    stops: [
+      { ...getStop('s-krk-1'), sequence: 1, distanceFromStartKm: 0 },
+      { ...getStop('s-bel-1'), sequence: 2, distanceFromStartKm: 10.2 },
+      { ...getStop('s-hir-1'), sequence: 3, distanceFromStartKm: 21.7 },
+      { ...getStop('s-mnp-tc'), sequence: 4, distanceFromStartKm: 32.0 },
+      { ...getStop('s-udp-sb'), sequence: 5, distanceFromStartKm: 38.2 }
+    ],
+    schedule: [
+      { tripId: 'trip-42ur-01', departureTime: '06:45', arrivalTime: '07:40', busId: 'bus-ka20-p-4201', busNumber: 'KA-20-B-4201', registrationNumber: 'KA-20-B-4201', busType: 'Private Route', operator: 'Vishal Coastal Motors', fareRupees: 45, capacity: 45, occupiedSeats: 18, availableSeats: 27 },
+      { tripId: 'trip-42ur-02', departureTime: '07:30', arrivalTime: '08:25', busId: 'bus-ka20-p-4202', busNumber: 'KA-20-B-4202', registrationNumber: 'KA-20-B-4202', busType: 'Private Route', operator: 'Canara Star Lines', fareRupees: 45, capacity: 45, occupiedSeats: 32, availableSeats: 13 },
+      { tripId: 'trip-42ur-03', departureTime: '08:15', arrivalTime: '09:10', busId: 'bus-ka20-p-4201', busNumber: 'KA-20-B-4201', registrationNumber: 'KA-20-B-4201', busType: 'Private Route', operator: 'Vishal Coastal Motors', fareRupees: 45, capacity: 45, occupiedSeats: 25, availableSeats: 20 },
+      { tripId: 'trip-42ur-04', departureTime: '09:00', arrivalTime: '09:55', busId: 'bus-ka20-p-4202', busNumber: 'KA-20-B-4202', registrationNumber: 'KA-20-B-4202', busType: 'Private Route', operator: 'Canara Star Lines', fareRupees: 45, capacity: 45, occupiedSeats: 16, availableSeats: 29 }
     ]
   },
 
@@ -257,8 +320,40 @@ export const INITIAL_ROUTES: Route[] = [
       { ...getStop('s-mbd-1'), sequence: 4, distanceFromStartKm: 18.0 }
     ],
     schedule: [
-      { tripId: 'trip-16k-01', departureTime: '07:20', arrivalTime: '07:48', busId: 'bus-ka20-k-1601', busNumber: 'KA-20-F-1601', registrationNumber: 'KA-20-F-1601', busType: 'KSRTC Ordinary', operator: 'KSRTC Karkala Depot', fareRupees: 22, capacity: 50, occupiedSeats: 26, availableSeats: 24 },
-      { tripId: 'trip-16k-02', departureTime: '08:00', arrivalTime: '08:28', busId: 'bus-ka20-k-1602', busNumber: 'KA-20-F-1602', registrationNumber: 'KA-20-F-1602', busType: 'KSRTC Ordinary', operator: 'KSRTC Karkala Depot', fareRupees: 22, capacity: 50, occupiedSeats: 35, availableSeats: 15 }
+      { tripId: 'trip-16k-01', departureTime: '06:45', arrivalTime: '07:13', busId: 'bus-ka20-k-1601', busNumber: 'KA-20-F-1601', registrationNumber: 'KA-20-F-1601', busType: 'KSRTC Ordinary', operator: 'KSRTC Karkala Depot', fareRupees: 22, capacity: 50, occupiedSeats: 18, availableSeats: 32 },
+      { tripId: 'trip-16k-02', departureTime: '07:20', arrivalTime: '07:48', busId: 'bus-ka20-k-1601', busNumber: 'KA-20-F-1601', registrationNumber: 'KA-20-F-1601', busType: 'KSRTC Ordinary', operator: 'KSRTC Karkala Depot', fareRupees: 22, capacity: 50, occupiedSeats: 26, availableSeats: 24 },
+      { tripId: 'trip-16k-03', departureTime: '08:00', arrivalTime: '08:28', busId: 'bus-ka20-k-1602', busNumber: 'KA-20-F-1602', registrationNumber: 'KA-20-F-1602', busType: 'KSRTC Ordinary', operator: 'KSRTC Karkala Depot', fareRupees: 22, capacity: 50, occupiedSeats: 35, availableSeats: 15 },
+      { tripId: 'trip-16k-04', departureTime: '08:40', arrivalTime: '09:08', busId: 'bus-ka20-k-1601', busNumber: 'KA-20-F-1601', registrationNumber: 'KA-20-F-1601', busType: 'KSRTC Ordinary', operator: 'KSRTC Karkala Depot', fareRupees: 22, capacity: 50, occupiedSeats: 20, availableSeats: 30 }
+    ]
+  },
+
+  // 5-R. Moodbidri to Karkala (Return Corridor)
+  {
+    id: 'route-16k-r',
+    routeNumber: '16K',
+    routeName: "Moodbidri ↔ Miyar ↔ Karkala (Alva's Student Sarige Return)",
+    origin: 'Moodbidri',
+    destination: 'Karkala',
+    via: ["Alva's Vidyagiri Gate", 'Pojekallu', 'Miyar', 'Anekallu'],
+    distanceKm: 18.0,
+    estimatedDurationMin: 28,
+    fareRupees: 22,
+    status: 'Active',
+    operatingDays: 'Daily',
+    busType: 'KSRTC Ordinary',
+    associatedBusIds: ['bus-ka20-k-1601', 'bus-ka20-k-1602'],
+    stops: [
+      { ...getStop('s-mbd-1'), sequence: 1, distanceFromStartKm: 0 },
+      { ...getStop('s-alv-1'), sequence: 2, distanceFromStartKm: 1.5 },
+      { ...getStop('s-miy-1'), sequence: 3, distanceFromStartKm: 11.8 },
+      { ...getStop('s-krk-1'), sequence: 4, distanceFromStartKm: 18.0 }
+    ],
+    schedule: [
+      { tripId: 'trip-16kr-01', departureTime: '06:45', arrivalTime: '07:13', busId: 'bus-ka20-k-1602', busNumber: 'KA-20-F-1602', registrationNumber: 'KA-20-F-1602', busType: 'KSRTC Ordinary', operator: 'KSRTC Karkala Depot', fareRupees: 22, capacity: 50, occupiedSeats: 15, availableSeats: 35 },
+      { tripId: 'trip-16kr-02', departureTime: '07:25', arrivalTime: '07:53', busId: 'bus-ka20-k-1601', busNumber: 'KA-20-F-1601', registrationNumber: 'KA-20-F-1601', busType: 'KSRTC Ordinary', operator: 'KSRTC Karkala Depot', fareRupees: 22, capacity: 50, occupiedSeats: 22, availableSeats: 28 },
+      { tripId: 'trip-16kr-03', departureTime: '08:05', arrivalTime: '08:33', busId: 'bus-ka20-k-1602', busNumber: 'KA-20-F-1602', registrationNumber: 'KA-20-F-1602', busType: 'KSRTC Ordinary', operator: 'KSRTC Karkala Depot', fareRupees: 22, capacity: 50, occupiedSeats: 30, availableSeats: 20 },
+      { tripId: 'trip-16kr-04', departureTime: '08:45', arrivalTime: '09:13', busId: 'bus-ka20-k-1601', busNumber: 'KA-20-F-1601', registrationNumber: 'KA-20-F-1601', busType: 'KSRTC Ordinary', operator: 'KSRTC Karkala Depot', fareRupees: 22, capacity: 50, occupiedSeats: 25, availableSeats: 25 },
+      { tripId: 'trip-16kr-05', departureTime: '09:30', arrivalTime: '09:58', busId: 'bus-ka20-k-1602', busNumber: 'KA-20-F-1602', registrationNumber: 'KA-20-F-1602', busType: 'KSRTC Ordinary', operator: 'KSRTC Karkala Depot', fareRupees: 22, capacity: 50, occupiedSeats: 12, availableSeats: 38 }
     ]
   },
 
@@ -598,7 +693,7 @@ export const INITIAL_ROUTES: Route[] = [
     status: 'Active',
     operatingDays: 'Daily',
     busType: 'Private Route',
-    associatedBusIds: ['bus-ka20-p-6601'],
+    associatedBusIds: ['bus-ka20-p-6601', 'bus-ka20-p-6602'],
     stops: [
       { ...getStop('s-krk-1'), sequence: 1, distanceFromStartKm: 0 },
       { ...getStop('s-bel-1'), sequence: 2, distanceFromStartKm: 14.5 },
@@ -606,7 +701,42 @@ export const INITIAL_ROUTES: Route[] = [
       { ...getStop('s-mul-1'), sequence: 4, distanceFromStartKm: 34.0 }
     ],
     schedule: [
-      { tripId: 'trip-66k-01', departureTime: '07:10', arrivalTime: '08:02', busId: 'bus-ka20-p-6601', busNumber: 'KA-20-B-6601', registrationNumber: 'KA-20-B-6601', busType: 'Private Route', operator: 'Padmaraj Roadlines', fareRupees: 40, capacity: 45, occupiedSeats: 20, availableSeats: 25 }
+      { tripId: 'trip-66k-01', departureTime: '06:30', arrivalTime: '07:22', busId: 'bus-ka20-p-6601', busNumber: 'KA-20-B-6601', registrationNumber: 'KA-20-B-6601', busType: 'Private Route', operator: 'Padmaraj Roadlines', fareRupees: 40, capacity: 45, occupiedSeats: 15, availableSeats: 30 },
+      { tripId: 'trip-66k-02', departureTime: '07:10', arrivalTime: '08:02', busId: 'bus-ka20-p-6602', busNumber: 'KA-20-B-6602', registrationNumber: 'KA-20-B-6602', busType: 'Private Route', operator: 'Vishal Coastal Motors', fareRupees: 40, capacity: 45, occupiedSeats: 22, availableSeats: 23 },
+      { tripId: 'trip-66k-03', departureTime: '07:45', arrivalTime: '08:37', busId: 'bus-ka20-p-6601', busNumber: 'KA-20-B-6601', registrationNumber: 'KA-20-B-6601', busType: 'Private Route', operator: 'Padmaraj Roadlines', fareRupees: 40, capacity: 45, occupiedSeats: 32, availableSeats: 13 },
+      { tripId: 'trip-66k-04', departureTime: '08:30', arrivalTime: '09:22', busId: 'bus-ka20-p-6602', busNumber: 'KA-20-B-6602', registrationNumber: 'KA-20-B-6602', busType: 'Private Route', operator: 'Vishal Coastal Motors', fareRupees: 40, capacity: 45, occupiedSeats: 28, availableSeats: 17 },
+      { tripId: 'trip-66k-05', departureTime: '09:15', arrivalTime: '10:07', busId: 'bus-ka20-p-6601', busNumber: 'KA-20-B-6601', registrationNumber: 'KA-20-B-6601', busType: 'Private Route', operator: 'Padmaraj Roadlines', fareRupees: 40, capacity: 45, occupiedSeats: 14, availableSeats: 31 }
+    ]
+  },
+
+  // 18-R. Mulki to Kinnigoli to Belman to Karkala (Return Corridor)
+  {
+    id: 'route-66k-r',
+    routeNumber: '66K',
+    routeName: 'Mulki ↔ Kinnigoli ↔ Belman ↔ Karkala Coastal Express',
+    origin: 'Mulki',
+    destination: 'Karkala',
+    via: ['Bappanadu Temple', 'Kinnigoli Bus Stand', 'Belman Junction'],
+    distanceKm: 34.0,
+    estimatedDurationMin: 52,
+    fareRupees: 40,
+    status: 'Active',
+    operatingDays: 'Daily',
+    busType: 'Private Route',
+    associatedBusIds: ['bus-ka20-p-6601', 'bus-ka20-p-6602'],
+    stops: [
+      { ...getStop('s-mul-1'), sequence: 1, distanceFromStartKm: 0 },
+      { ...getStop('s-kin-1'), sequence: 2, distanceFromStartKm: 9.5 },
+      { ...getStop('s-bel-1'), sequence: 3, distanceFromStartKm: 19.5 },
+      { ...getStop('s-krk-1'), sequence: 4, distanceFromStartKm: 34.0 }
+    ],
+    schedule: [
+      { tripId: 'trip-66kr-01', departureTime: '06:15', arrivalTime: '07:07', busId: 'bus-ka20-p-6602', busNumber: 'KA-20-B-6602', registrationNumber: 'KA-20-B-6602', busType: 'Private Route', operator: 'Vishal Coastal Motors', fareRupees: 40, capacity: 45, occupiedSeats: 16, availableSeats: 29 },
+      { tripId: 'trip-66kr-02', departureTime: '06:45', arrivalTime: '07:37', busId: 'bus-ka20-p-6601', busNumber: 'KA-20-B-6601', registrationNumber: 'KA-20-B-6601', busType: 'Private Route', operator: 'Padmaraj Roadlines', fareRupees: 40, capacity: 45, occupiedSeats: 21, availableSeats: 24 },
+      { tripId: 'trip-66kr-03', departureTime: '07:15', arrivalTime: '08:07', busId: 'bus-ka20-p-6602', busNumber: 'KA-20-B-6602', registrationNumber: 'KA-20-B-6602', busType: 'Private Route', operator: 'Vishal Coastal Motors', fareRupees: 40, capacity: 45, occupiedSeats: 28, availableSeats: 17 },
+      { tripId: 'trip-66kr-04', departureTime: '07:45', arrivalTime: '08:37', busId: 'bus-ka20-p-6601', busNumber: 'KA-20-B-6601', registrationNumber: 'KA-20-B-6601', busType: 'Private Route', operator: 'Padmaraj Roadlines', fareRupees: 40, capacity: 45, occupiedSeats: 25, availableSeats: 20 },
+      { tripId: 'trip-66kr-05', departureTime: '08:15', arrivalTime: '09:07', busId: 'bus-ka20-p-6602', busNumber: 'KA-20-B-6602', registrationNumber: 'KA-20-B-6602', busType: 'Private Route', operator: 'Vishal Coastal Motors', fareRupees: 40, capacity: 45, occupiedSeats: 18, availableSeats: 27 },
+      { tripId: 'trip-66kr-06', departureTime: '09:00', arrivalTime: '09:52', busId: 'bus-ka20-p-6601', busNumber: 'KA-20-B-6601', registrationNumber: 'KA-20-B-6601', busType: 'Private Route', operator: 'Padmaraj Roadlines', fareRupees: 40, capacity: 45, occupiedSeats: 14, availableSeats: 31 }
     ]
   },
 
@@ -1786,6 +1916,43 @@ export const INITIAL_BUSES: Bus[] = [
     fareRupees: 40,
     scheduledDeparture: '07:10',
     scheduledArrival: '08:02',
+    totalDistanceKm: 34.0
+  },
+  {
+    id: 'bus-ka20-p-6602',
+    busNumber: 'KA-20-B-6602',
+    registrationNumber: 'KA-20-B-6602',
+    busName: 'Vishal Coastal Shuttle',
+    busType: 'Private Route',
+    operator: 'Vishal Coastal Motors',
+    routeId: 'route-66k-r',
+    routeNumber: '66K',
+    routeName: '66K (Mulki ↔ Kinnigoli ↔ Belman ↔ Karkala)',
+    origin: 'Mulki',
+    destination: 'Karkala',
+    stops: ['Mulki Town Bus Stand', 'Kinnigoli Bus Stand', 'Belman Junction', 'Karkala Bus Stand'],
+    capacity: 45,
+    occupiedSeats: 22,
+    availableSeats: 23,
+    status: 'On Time',
+    currentLat: 13.0850,
+    currentLng: 74.8720,
+    heading: 45,
+    speedKmH: 42,
+    lastUpdated: new Date().toISOString(),
+    currentStopIndex: 1,
+    delayMinutes: 0,
+    driverName: 'Suresh Devadiga',
+    driverPhone: '+91 98455 12345',
+    isSimulatedGps: true,
+    nextStopName: 'Belman Rural Junction',
+    distanceToNextStopKm: 10.0,
+    remainingDistanceKm: 24.5,
+    etaNextStop: '07:48',
+    etaDestination: '08:07',
+    fareRupees: 40,
+    scheduledDeparture: '07:15',
+    scheduledArrival: '08:07',
     totalDistanceKm: 34.0
   },
   {
