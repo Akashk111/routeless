@@ -666,6 +666,17 @@ export const INITIAL_ROUTES: Route[] = [
 // ==========================================
 // 32 BUSES
 // ==========================================
+export function getBusImageUrl(busType: BusType): string {
+  switch (busType) {
+    case 'Express': return '/images/buses/ksrtc-express.svg';
+    case 'Private Route': return '/images/buses/private-coastal.svg';
+    case 'College Shuttle': return '/images/buses/college-campus.svg';
+    case 'Shared Feeder': return '/images/buses/rural-feeder.svg';
+    case 'KSRTC Ordinary':
+    default: return '/images/buses/ksrtc-ordinary.svg';
+  }
+}
+
 export const INITIAL_BUSES: Bus[] = [
   {
     id: 'bus-ka19-1401',
@@ -1909,9 +1920,16 @@ export const INITIAL_TRIPS: Trip[] = INITIAL_ROUTES.flatMap(r =>
     availableSeats: s.availableSeats,
     status: s.availableSeats <= 0 ? 'Full Capacity' : 'On Time',
     operatingDays: r.operatingDays,
-    stops: r.stops.map(st => st.name)
+    stops: r.stops.map(st => st.name),
+    imageUrl: getBusImageUrl(s.busType)
   }))
 );
+
+INITIAL_BUSES.forEach(b => {
+  if (!b.imageUrl) {
+    b.imageUrl = getBusImageUrl(b.busType);
+  }
+});
 
 export const INITIAL_REQUESTS: TravelRequest[] = [
   {

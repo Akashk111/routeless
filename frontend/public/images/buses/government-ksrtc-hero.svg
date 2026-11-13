@@ -1,0 +1,126 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="100%" height="100%">
+  <defs>
+    <linearGradient id="skyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0F172A"/>
+      <stop offset="60%" stop-color="#1E293B"/>
+      <stop offset="100%" stop-color="#334155"/>
+    </linearGradient>
+    <linearGradient id="roadGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#334155"/>
+      <stop offset="100%" stop-color="#0F172A"/>
+    </linearGradient>
+    <linearGradient id="busBodyGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#B91C1C"/>
+      <stop offset="40%" stop-color="#DC2626"/>
+      <stop offset="85%" stop-color="#EF4444"/>
+      <stop offset="100%" stop-color="#991B1B"/>
+    </linearGradient>
+    <linearGradient id="glassGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#0284C7" stop-opacity="0.95"/>
+    </linearGradient>
+    <linearGradient id="glowGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FDE047" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#FDE047" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="shadowFilter" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000000" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+
+  <!-- Background Sky & Western Ghats Foothills -->
+  <rect width="800" height="450" fill="url(#skyGrad)"/>
+  <path d="M0 260 Q180 180 380 230 T800 200 L800 450 L0 450 Z" fill="#132A13" opacity="0.4"/>
+  <path d="M0 290 Q220 220 520 270 T800 250 L800 450 L0 450 Z" fill="#1B4332" opacity="0.6"/>
+
+  <!-- Rural Road Highway -->
+  <path d="M0 340 L800 340 L800 450 L0 450 Z" fill="url(#roadGrad)"/>
+  <line x1="0" y1="410" x2="800" y2="410" stroke="#FDE047" stroke-width="4" stroke-dasharray="35 25" opacity="0.8"/>
+
+  <!-- Headlight beam projection -->
+  <polygon points="620 310 800 280 800 390 620 340" fill="url(#glowGrad)"/>
+
+  <!-- Bus Shadow -->
+  <ellipse cx="410" cy="365" rx="270" ry="24" fill="#000000" opacity="0.6"/>
+
+  <!-- MAIN BUS BODY -->
+  <g filter="url(#shadowFilter)">
+    <!-- Main Shell -->
+    <path d="M 160 160 Q 160 145 175 145 L 610 145 Q 645 145 650 175 L 655 310 Q 655 330 635 330 L 170 330 Q 160 330 160 315 Z" fill="url(#busBodyGrad)"/>
+
+    <!-- Silver Trim Stripe (KSRTC classic livery) -->
+    <rect x="160" y="270" width="495" height="18" fill="#E2E8F0"/>
+    <rect x="160" y="274" width="495" height="4" fill="#B91C1C"/>
+
+    <!-- Karnataka Sarige Emblem Accent -->
+    <circle cx="210" cy="279" r="7" fill="#F59E0B"/>
+    <text x="225" y="283" font-family="system-ui, sans-serif" font-size="10" font-weight="900" fill="#0F172A" letter-spacing="1">KSRTC GRAMINA SARIGE</text>
+
+    <!-- Roof AC / luggage rack structure -->
+    <rect x="230" y="136" width="350" height="9" rx="3" fill="#64748B"/>
+    <line x1="260" y1="136" x2="260" y2="145" stroke="#475569" stroke-width="2"/>
+    <line x1="340" y1="136" x2="340" y2="145" stroke="#475569" stroke-width="2"/>
+    <line x1="420" y1="136" x2="420" y2="145" stroke="#475569" stroke-width="2"/>
+    <line x1="500" y1="136" x2="500" y2="145" stroke="#475569" stroke-width="2"/>
+
+    <!-- Front Destination Display Board (LED) -->
+    <rect x="520" y="155" width="120" height="24" rx="4" fill="#090D16" stroke="#334155" stroke-width="1.5"/>
+    <text x="580" y="171" font-family="monospace" font-size="11" font-weight="bold" fill="#FDE047" text-anchor="middle" letter-spacing="1.5">MANGALURU ↔ MOODBIDRI</text>
+
+    <!-- Windshield (Front) -->
+    <path d="M 535 185 L 642 185 L 647 260 L 535 260 Z" fill="url(#glassGrad)"/>
+    <!-- Windshield Wipers -->
+    <line x1="580" y1="260" x2="560" y2="210" stroke="#0F172A" stroke-width="2.5"/>
+    <line x1="620" y1="260" x2="600" y2="210" stroke="#0F172A" stroke-width="2.5"/>
+
+    <!-- Passenger Windows (Side) -->
+    <g fill="url(#glassGrad)">
+      <rect x="175" y="185" width="48" height="65" rx="4"/>
+      <rect x="230" y="185" width="52" height="65" rx="4"/>
+      <rect x="290" y="185" width="52" height="65" rx="4"/>
+      <rect x="350" y="185" width="52" height="65" rx="4"/>
+      <rect x="410" y="185" width="52" height="65" rx="4"/>
+      <rect x="470" y="185" width="52" height="65" rx="4"/>
+    </g>
+
+    <!-- Passenger Silhouette Details inside windows -->
+    <circle cx="255" cy="210" r="8" fill="#0F172A" opacity="0.45"/>
+    <path d="M 245 230 C 245 220 265 220 265 230 Z" fill="#0F172A" opacity="0.45"/>
+    <circle cx="315" cy="210" r="8" fill="#0F172A" opacity="0.45"/>
+    <path d="M 305 230 C 305 220 325 220 325 230 Z" fill="#0F172A" opacity="0.45"/>
+    <circle cx="435" cy="210" r="8" fill="#0F172A" opacity="0.45"/>
+    <path d="M 425 230 C 425 220 445 220 445 230 Z" fill="#0F172A" opacity="0.45"/>
+
+    <!-- Front Headlight Cluster -->
+    <circle cx="645" cy="305" r="9" fill="#FEF08A" stroke="#E2E8F0" stroke-width="2"/>
+    <circle cx="645" cy="305" r="5" fill="#FFFFFF"/>
+    <rect x="635" y="318" width="16" height="4" rx="2" fill="#F97316"/>
+
+    <!-- Chrome Front Grille & Karnataka Registration Plate -->
+    <rect x="605" y="295" width="30" height="25" rx="3" fill="#1E293B" stroke="#475569" stroke-width="1"/>
+    <rect x="580" y="322" width="60" height="14" rx="2" fill="#FDE047" stroke="#000" stroke-width="1"/>
+    <text x="610" y="333" font-family="monospace" font-size="9" font-weight="900" fill="#000" text-anchor="middle">KA-19-F-1401</text>
+
+    <!-- Wheel Wells & Wheels -->
+    <!-- Rear Wheel -->
+    <circle cx="245" cy="335" r="38" fill="#0F172A"/>
+    <circle cx="245" cy="335" r="30" fill="#1E293B"/>
+    <circle cx="245" cy="335" r="18" fill="#94A3B8"/>
+    <circle cx="245" cy="335" r="7" fill="#0F172A"/>
+
+    <!-- Front Wheel -->
+    <circle cx="565" cy="335" r="38" fill="#0F172A"/>
+    <circle cx="565" cy="335" r="30" fill="#1E293B"/>
+    <circle cx="565" cy="335" r="18" fill="#94A3B8"/>
+    <circle cx="565" cy="335" r="7" fill="#0F172A"/>
+  </g>
+
+  <!-- ROUTELESS Platform Badge Overlay -->
+  <g transform="translate(40, 40)">
+    <rect width="210" height="50" rx="14" fill="#0F172A" fill-opacity="0.85" stroke="#38BDF8" stroke-width="1.5"/>
+    <circle cx="26" cy="25" r="12" fill="#2563EB"/>
+    <text x="26" y="30" font-family="system-ui, sans-serif" font-size="14" font-weight="bold" fill="#FFFFFF" text-anchor="middle">🚌</text>
+    <text x="48" y="23" font-family="system-ui, sans-serif" font-size="13" font-weight="900" fill="#FFFFFF" letter-spacing="0.5">ROUTELESS FLEET</text>
+    <text x="48" y="38" font-family="system-ui, sans-serif" font-size="10" font-weight="700" fill="#38BDF8">Rural Karnataka Transit</text>
+  </g>
+</svg>

@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 360" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgG5" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#F0FDF4"/>
+      <stop offset="100%" stop-color="#DCFCE7"/>
+    </linearGradient>
+    <linearGradient id="busTeal" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0D9488"/>
+      <stop offset="60%" stop-color="#0F766E"/>
+      <stop offset="100%" stop-color="#115E59"/>
+    </linearGradient>
+    <linearGradient id="busGlass5" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#CCFBF1"/>
+      <stop offset="100%" stop-color="#5EEAD4"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="360" rx="16" fill="url(#bgG5)"/>
+  <rect y="280" width="600" height="80" fill="#1E293B"/>
+  <line x1="0" y1="320" x2="600" y2="320" stroke="#FDE047" stroke-width="3" stroke-dasharray="25 20"/>
+
+  <ellipse cx="300" cy="295" rx="210" ry="16" fill="#000000" opacity="0.35"/>
+
+  <!-- Bus Body (Slightly shorter Minibus profile) -->
+  <path d="M 110 115 Q 110 100 125 100 L 465 100 Q 490 100 495 130 L 500 245 Q 500 260 480 260 L 120 260 Q 110 260 110 245 Z" fill="url(#busTeal)"/>
+  <rect x="110" y="210" width="390" height="18" fill="#F0FDFA"/>
+  <text x="140" y="223" font-family="sans-serif" font-size="10" font-weight="900" fill="#0F766E" letter-spacing="1.5">GRAMINA CONNECT • RURAL MAXICAB</text>
+
+  <!-- Destination Board -->
+  <rect x="380" y="110" width="105" height="18" rx="3" fill="#0F172A"/>
+  <text x="432" y="123" font-family="monospace" font-size="9" font-weight="bold" fill="#2DD4BF" text-anchor="middle">VILLAGE FEEDER</text>
+
+  <!-- Front Windshield -->
+  <path d="M 405 135 L 488 135 L 493 195 L 405 195 Z" fill="url(#busGlass5)"/>
+
+  <!-- Windows -->
+  <g fill="url(#busGlass5)">
+    <rect x="125" y="135" width="48" height="55" rx="4"/>
+    <rect x="181" y="135" width="48" height="55" rx="4"/>
+    <rect x="237" y="135" width="48" height="55" rx="4"/>
+    <rect x="293" y="135" width="48" height="55" rx="4"/>
+    <rect x="349" y="135" width="48" height="55" rx="4"/>
+  </g>
+
+  <!-- Wheels -->
+  <circle cx="180" cy="265" r="30" fill="#0F172A"/>
+  <circle cx="180" cy="265" r="22" fill="#334155"/>
+  <circle cx="180" cy="265" r="12" fill="#99F6E4"/>
+  <circle cx="430" cy="265" r="30" fill="#0F172A"/>
+  <circle cx="430" cy="265" r="22" fill="#334155"/>
+  <circle cx="430" cy="265" r="12" fill="#99F6E4"/>
+
+  <!-- Category Badge -->
+  <g transform="translate(20, 20)">
+    <rect width="130" height="28" rx="8" fill="#0D9488"/>
+    <text x="65" y="18" font-family="sans-serif" font-size="11" font-weight="bold" fill="#FFF" text-anchor="middle">Shared Feeder</text>
+  </g>
+</svg>

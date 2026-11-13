@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../services/api.js';
 import { useAuth } from '../context/AuthContext.js';
-import { Bus, Route, TravelRequest, TransportReport, BusStatus, BusType } from '../types/index.js';
+import { Bus, Route, TravelRequest, TransportReport, BusStatus, BusType, Booking } from '../types/index.js';
 import { StatusBadge } from '../components/common/StatusBadge.js';
+import { getBusImage } from '../utils/busImages.js';
 import {
   ShieldCheck,
   Bus as BusIcon,
@@ -20,7 +21,9 @@ import {
   Filter,
   SlidersHorizontal,
   Clock,
-  Radio
+  Radio,
+  Ticket,
+  XCircle
 } from 'lucide-react';
 
 export const AdminDashboard: React.FC = () => {
@@ -30,12 +33,14 @@ export const AdminDashboard: React.FC = () => {
   const [routes, setRoutes] = useState<Route[]>([]);
   const [requests, setRequests] = useState<TravelRequest[]>([]);
   const [reports, setReports] = useState<TransportReport[]>([]);
-  const [activeTab, setActiveTab] = useState<'buses' | 'routes' | 'requests' | 'reports'>('buses');
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [activeTab, setActiveTab] = useState<'buses' | 'routes' | 'requests' | 'reports' | 'bookings'>('buses');
   const [isLoading, setIsLoading] = useState(true);
 
   // Add Bus Modal State
   const [showAddBusModal, setShowAddBusModal] = useState(false);
   const [newBusNumber, setNewBusNumber] = useState('KA-19-F-8820');
+  const [newBusRegistration, setNewBusRegistration] = useState('KA-19-F-8820');
   const [newBusName, setNewBusName] = useState('Moodbidri Express Feeder');
   const [newBusType, setNewBusType] = useState<BusType>('KSRTC Ordinary');
   const [newBusOperator, setNewBusOperator] = useState('KSRTC Rural Gramina Sarige');
@@ -53,20 +58,35 @@ export const AdminDashboard: React.FC = () => {
   const loadAdminData = async () => {
     setIsLoading(true);
     try {
-      const [busList, routeList, reqList, repList] = await Promise.all([
+      const [busList, routeList, reqList, repList, bookList] = await Promise.all([
         api.getBuses(),
         api.getRoutes(),
         api.getRequests(),
-        api.getReports()
+        api.getReports(),
+        api.getBookings()
       ]);
       setBuses(busList);
       setRoutes(routeList);
       setRequests(reqList);
       setReports(repList);
+      setBookings(bookList);
     } catch (e) {
       console.error(e);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleAdminCancelBooking = async (bookingId: string) => {
+    if (!window.confirm('Cancel this passenger booking? Seat will be refunded back to the bus inventory.')) return;
+    try {
+      const res = await api.cancelBooking(bookingId);
+      if (res.success) {
+        await loadAdminData();
+        showFlash('Booking cancelled. Seat inventory restored.');
+      }
+    } catch (e) {
+      console.error(e);
     }
   };
 
@@ -114,6 +134,7 @@ export const AdminDashboard: React.FC = () => {
       const selRoute = routes.find(r => r.id === newBusRouteId);
       const created = await api.addBus({
         busNumber: newBusNumber,
+        registrationNumber: newBusRegistration,
         busName: newBusName,
         busType: newBusType,
         operator: newBusOperator,
@@ -127,7 +148,8 @@ export const AdminDashboard: React.FC = () => {
         currentLat: selRoute?.stops[0]?.latitude || 13.0854,
         currentLng: selRoute?.stops[0]?.longitude || 74.8722,
         fareRupees: selRoute?.fareRupees || 35,
-        totalDistanceKm: selRoute?.distanceKm || 28.5
+        totalDistanceKm: selRoute?.distanceKm || 28.5,
+        imageUrl: getBusImage(newBusType, newBusNumber)
       });
       setBuses(prev => [...prev, created]);
       setShowAddBusModal(false);
@@ -316,6 +338,16 @@ export const AdminDashboard: React.FC = () => {
             <AlertTriangle className="w-4 h-4" />
             <span>Problem Reports ({reports.length})</span>
           </button>
+
+          <button
+            onClick={() => setActiveTab('bookings')}
+            className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition ${
+              activeTab === 'bookings' ? 'bg-navy-900 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'
+            }`}
+          >
+            <Ticket className="w-4 h-4" />
+            <span>Passenger Bookings ({bookings.length})</span>
+          </button>
         </div>
 
         {/* TAB 1: BUS MANAGEMENT (Section 10 Requirement) */}
@@ -353,8 +385,18 @@ export const AdminDashboard: React.FC = () => {
                   {buses.map(bus => (
                     <tr key={bus.id} className="hover:bg-slate-50 transition">
                       <td className="py-3 px-2">
-                        <div className="font-extrabold text-navy-900">{bus.busNumber}</div>
-                        <div className="text-[10px] text-slate-500">{bus.busName}</div>
+                        <div className="flex items-center gap-2.5">
+                          <img
+                            src={bus.imageUrl || getBusImage(bus.busType, bus.busNumber)}
+                            alt={bus.busNumber}
+                            className="w-12 h-8 rounded-lg object-cover border border-slate-200 shrink-0 shadow-2xs"
+                          />
+                          <div>
+                            <div className="font-extrabold text-navy-900">{bus.busNumber}</div>
+                            <div className="text-[10px] text-slate-500">{bus.busName}</div>
+                            <div className="text-[10px] font-mono text-amber-800 font-bold">Reg: {bus.registrationNumber || 'KA-19-F-1401'}</div>
+                          </div>
+                        </div>
                       </td>
 
                       <td className="py-3 px-2">
@@ -564,6 +606,84 @@ export const AdminDashboard: React.FC = () => {
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* TAB 5: PASSENGER BOOKINGS MANIFEST (Part 6 Requirement) */}
+        {activeTab === 'bookings' && (
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div>
+                <h2 className="text-base font-bold text-navy-900">Passenger Seat Bookings Manifest ({bookings.length})</h2>
+                <p className="text-xs text-slate-500">Live student reservations, boarding tokens, and seat inventory controls</p>
+              </div>
+              <span className="text-xs font-bold px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-300">
+                {bookings.filter(b => b.status === 'CONFIRMED').length} Active Reservations
+              </span>
+            </div>
+
+            {bookings.length === 0 ? (
+              <div className="p-8 text-center bg-slate-50 rounded-xl border border-dashed border-slate-300 text-slate-500 text-xs">
+                No bookings recorded yet in the database.
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead>
+                    <tr className="border-b border-slate-200 text-slate-400 uppercase text-[10px] font-bold">
+                      <th className="py-3 px-2">Booking Ref</th>
+                      <th className="py-3 px-2">Student Passenger</th>
+                      <th className="py-3 px-2">Bus & Reg</th>
+                      <th className="py-3 px-2">Journey Route</th>
+                      <th className="py-3 px-2">Seat #</th>
+                      <th className="py-3 px-2">Departure</th>
+                      <th className="py-3 px-2">Status</th>
+                      <th className="py-3 px-2 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {bookings.map(b => (
+                      <tr key={b.id} className="hover:bg-slate-50 transition">
+                        <td className="py-3 px-2 font-mono font-bold text-navy-900">{b.bookingReference}</td>
+                        <td className="py-3 px-2">
+                          <strong className="text-slate-800">{b.passengerName}</strong>
+                          <div className="text-[10px] text-slate-400 font-mono">{b.studentId}</div>
+                        </td>
+                        <td className="py-3 px-2">
+                          <strong className="text-brand-blue">{b.busNumber}</strong>
+                          <div className="text-[10px] text-slate-500 font-mono">{b.registrationNumber}</div>
+                        </td>
+                        <td className="py-3 px-2">
+                          <span className="text-slate-700">{b.fromStop} ➔ {b.toStop}</span>
+                        </td>
+                        <td className="py-3 px-2">
+                          <span className="font-extrabold text-emerald-700">Seat #{b.seatNumber}</span>
+                        </td>
+                        <td className="py-3 px-2">
+                          <span>{b.departureTime}</span>
+                          <span className="text-[10px] text-slate-400 block">{b.travelDate}</span>
+                        </td>
+                        <td className="py-3 px-2">
+                          <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${b.status === 'CONFIRMED' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}`}>
+                            {b.status}
+                          </span>
+                        </td>
+                        <td className="py-3 px-2 text-right">
+                          {b.status === 'CONFIRMED' && (
+                            <button
+                              onClick={() => handleAdminCancelBooking(b.id)}
+                              className="px-2.5 py-1 rounded bg-rose-50 text-rose-700 hover:bg-rose-100 font-bold text-[10px] border border-rose-200 transition"
+                            >
+                              Cancel & Release Seat
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         )}
 

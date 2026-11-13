@@ -208,6 +208,7 @@ export function planJourneys(
           primaryOperator: opName,
           primaryBusNumber: busNumber,
           primaryRegistrationNumber: regNumber,
+          imageUrl: bus.imageUrl || '/images/buses/ksrtc-ordinary.svg',
           legs: [
             {
               routeId: route.id,
@@ -229,7 +230,8 @@ export function planJourneys(
               availableSeats: availSeats,
               occupiedSeats: occSeats,
               capacity: totSeats,
-              intermediateStops
+              intermediateStops,
+              imageUrl: bus.imageUrl || '/images/buses/ksrtc-ordinary.svg'
             }
           ]
         });
@@ -345,6 +347,7 @@ export function planJourneys(
                   primaryOperator: `${s1.operator || bus1.operator} + ${s2.operator || bus2.operator}`,
                   primaryBusNumber: `${s1.busNumber || bus1.busNumber} / ${s2.busNumber || bus2.busNumber}`,
                   primaryRegistrationNumber: `${reg1} / ${reg2}`,
+                  imageUrl: bus1.imageUrl || '/images/buses/ksrtc-ordinary.svg',
                   legs: [
                     {
                       routeId: r1.id,
@@ -366,7 +369,8 @@ export function planJourneys(
                       availableSeats: s1.availableSeats ?? bus1.availableSeats,
                       occupiedSeats: s1.occupiedSeats ?? bus1.occupiedSeats,
                       capacity: s1.capacity ?? bus1.capacity,
-                      intermediateStops: inter1
+                      intermediateStops: inter1,
+                      imageUrl: bus1.imageUrl || '/images/buses/ksrtc-ordinary.svg'
                     },
                     {
                       routeId: r2.id,
@@ -388,7 +392,8 @@ export function planJourneys(
                       availableSeats: s2.availableSeats ?? bus2.availableSeats,
                       occupiedSeats: s2.occupiedSeats ?? bus2.occupiedSeats,
                       capacity: s2.capacity ?? bus2.capacity,
-                      intermediateStops: inter2
+                      intermediateStops: inter2,
+                      imageUrl: bus2.imageUrl || '/images/buses/ksrtc-ordinary.svg'
                     }
                   ]
                 });

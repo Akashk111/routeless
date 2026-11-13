@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 360" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgG3" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#F0F9FF"/>
+      <stop offset="100%" stop-color="#E0F2FE"/>
+    </linearGradient>
+    <linearGradient id="busBlue" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#2563EB"/>
+      <stop offset="50%" stop-color="#1D4ED8"/>
+      <stop offset="100%" stop-color="#1E40AF"/>
+    </linearGradient>
+    <linearGradient id="busGlass3" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#E0F2FE"/>
+      <stop offset="100%" stop-color="#38BDF8"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="360" rx="16" fill="url(#bgG3)"/>
+  <rect y="280" width="600" height="80" fill="#0F172A"/>
+  <line x1="0" y1="320" x2="600" y2="320" stroke="#FDE047" stroke-width="3" stroke-dasharray="25 20"/>
+
+  <ellipse cx="300" cy="295" rx="230" ry="18" fill="#000000" opacity="0.35"/>
+
+  <!-- Bus Body -->
+  <path d="M 80 110 Q 80 95 95 95 L 485 95 Q 515 95 520 125 L 525 245 Q 525 260 505 260 L 90 260 Q 80 260 80 245 Z" fill="url(#busBlue)"/>
+  <!-- Vibrant Coastal Wave Swish Striping -->
+  <path d="M 80 215 Q 260 240 525 200 L 525 220 Q 260 260 80 235 Z" fill="#F97316"/>
+  <path d="M 80 235 Q 260 260 525 220 L 525 235 Q 260 275 80 250 Z" fill="#FACC15"/>
+  <text x="130" y="210" font-family="sans-serif" font-size="10" font-weight="900" fill="#FFF" letter-spacing="1.5">CANARA LINER • COASTAL EXPRESS</text>
+
+  <!-- Destination Board -->
+  <rect x="400" y="105" width="105" height="20" rx="3" fill="#0F172A"/>
+  <text x="452" y="119" font-family="monospace" font-size="10" font-weight="bold" fill="#F97316" text-anchor="middle">MOODBIDRI EXP</text>
+
+  <!-- Front Windshield -->
+  <path d="M 420 130 L 512 130 L 517 195 L 420 195 Z" fill="url(#busGlass3)"/>
+
+  <!-- Windows -->
+  <g fill="url(#busGlass3)">
+    <rect x="95" y="130" width="44" height="55" rx="4"/>
+    <rect x="148" y="130" width="46" height="55" rx="4"/>
+    <rect x="202" y="130" width="46" height="55" rx="4"/>
+    <rect x="256" y="130" width="46" height="55" rx="4"/>
+    <rect x="310" y="130" width="46" height="55" rx="4"/>
+    <rect x="364" y="130" width="46" height="55" rx="4"/>
+  </g>
+
+  <!-- Wheels -->
+  <circle cx="155" cy="265" r="32" fill="#0F172A"/>
+  <circle cx="155" cy="265" r="24" fill="#334155"/>
+  <circle cx="155" cy="265" r="14" fill="#F59E0B"/>
+  <circle cx="445" cy="265" r="32" fill="#0F172A"/>
+  <circle cx="445" cy="265" r="24" fill="#334155"/>
+  <circle cx="445" cy="265" r="14" fill="#F59E0B"/>
+
+  <!-- Category Badge -->
+  <g transform="translate(20, 20)">
+    <rect width="130" height="28" rx="8" fill="#1D4ED8"/>
+    <text x="65" y="18" font-family="sans-serif" font-size="11" font-weight="bold" fill="#FFF" text-anchor="middle">Private Coastal</text>
+  </g>
+</svg>

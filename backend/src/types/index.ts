@@ -163,6 +163,7 @@ export interface JourneyLeg {
   occupiedSeats: number;
   capacity: number;
   intermediateStops: string[];
+  imageUrl?: string;
 }
 
 export interface OptimizedJourney {
@@ -189,6 +190,7 @@ export interface OptimizedJourney {
   primaryOperator: string;
   primaryBusNumber: string;
   primaryRegistrationNumber: string;
+  imageUrl?: string;
 }
 
 export interface TravelRequest {

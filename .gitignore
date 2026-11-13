@@ -30,3 +30,8 @@ pnpm-debug.log*
 *.ntvs*
 *.njsproj
 *.sln
+
+# Database files
+*.sqlite
+*.sqlite-journal
+backend/data/*.sqlite

@@ -7,7 +7,8 @@ import {
   AlternativeOption,
   TravelRequest,
   TransportReport,
-  AppNotification
+  AppNotification,
+  Booking
 } from '../types/index.js';
 
 const API_BASE = '/api';
@@ -166,6 +167,41 @@ export const api = {
     const res = await fetch(`${API_BASE}/buses/${busId}/location`);
     const data = await res.json();
     return data.location;
+  },
+
+  // Bookings
+  async getBookings(studentId?: string): Promise<Booking[]> {
+    const url = studentId ? `${API_BASE}/bookings?studentId=${encodeURIComponent(studentId)}` : `${API_BASE}/bookings`;
+    const res = await fetch(url);
+    const data = await res.json();
+    return data.bookings || [];
+  },
+
+  async createBooking(bookingData: {
+    tripId?: string;
+    busId?: string;
+    fromStop: string;
+    toStop: string;
+    departureTime: string;
+    arrivalTime: string;
+    travelDate?: string;
+    studentId?: string;
+    passengerName?: string;
+    farePaid?: number;
+  }): Promise<{ success: boolean; booking?: Booking; error?: string }> {
+    const res = await fetch(`${API_BASE}/bookings`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(bookingData)
+    });
+    return res.json();
+  },
+
+  async cancelBooking(bookingId: string): Promise<{ success: boolean; error?: string }> {
+    const res = await fetch(`${API_BASE}/bookings/${bookingId}/cancel`, {
+      method: 'POST'
+    });
+    return res.json();
   },
 
   // Alternatives

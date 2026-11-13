@@ -96,6 +96,21 @@ class BusSimulator {
       bus.etaNextStop = calculateETA(currentTimeStr, bus.distanceToNextStopKm, bus.speedKmH, 1);
       bus.etaDestination = calculateETA(currentTimeStr, bus.remainingDistanceKm, bus.speedKmH, remainingStopsCount);
       bus.lastUpdated = new Date().toISOString();
+
+      // Persist updated GPS coordinates and real-time state into SQLite
+      store.updateBus(bus.id, {
+        currentLat: bus.currentLat,
+        currentLng: bus.currentLng,
+        heading: bus.heading,
+        speedKmH: bus.speedKmH,
+        currentStopIndex: bus.currentStopIndex,
+        nextStopName: bus.nextStopName,
+        distanceToNextStopKm: bus.distanceToNextStopKm,
+        remainingDistanceKm: bus.remainingDistanceKm,
+        etaNextStop: bus.etaNextStop,
+        etaDestination: bus.etaDestination,
+        lastUpdated: bus.lastUpdated
+      });
     });
   }
 

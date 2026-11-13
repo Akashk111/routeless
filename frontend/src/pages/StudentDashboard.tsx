@@ -3,8 +3,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.js';
 import { useNotifications } from '../context/NotificationContext.js';
 import { api } from '../services/api.js';
-import { Bus, TravelRequest, TransportReport } from '../types/index.js';
+import { Bus, TravelRequest, TransportReport, Booking } from '../types/index.js';
 import { StatusBadge } from '../components/common/StatusBadge.js';
+import { getBusImage } from '../utils/busImages.js';
 import {
   Compass,
   Shuffle,
@@ -20,7 +21,11 @@ import {
   ExternalLink,
   ChevronRight,
   TrendingUp,
-  School
+  School,
+  Ticket,
+  QrCode,
+  XCircle,
+  ShieldCheck
 } from 'lucide-react';
 
 export const StudentDashboard: React.FC = () => {
@@ -31,6 +36,8 @@ export const StudentDashboard: React.FC = () => {
   const [buses, setBuses] = useState<Bus[]>([]);
   const [requests, setRequests] = useState<TravelRequest[]>([]);
   const [reports, setReports] = useState<TransportReport[]>([]);
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [isCancelling, setIsCancelling] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   // Quick travel request modal / mini-form state
@@ -51,18 +58,35 @@ export const StudentDashboard: React.FC = () => {
 
   const loadData = async () => {
     try {
-      const [busData, reqData, repData] = await Promise.all([
+      const [busData, reqData, repData, bookData] = await Promise.all([
         api.getBuses(),
         api.getRequests(),
-        api.getReports()
+        api.getReports(),
+        api.getBookings()
       ]);
       setBuses(busData);
       setRequests(reqData);
       setReports(repData);
+      setBookings(bookData);
     } catch (e) {
       console.error('Error loading dashboard data', e);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleCancelBooking = async (bookingId: string) => {
+    if (!window.confirm('Cancel this seat reservation? Your seat will immediately be returned to available fleet capacity.')) return;
+    setIsCancelling(bookingId);
+    try {
+      const res = await api.cancelBooking(bookingId);
+      if (res.success) {
+        await loadData();
+      }
+    } catch (e) {
+      console.error('Error cancelling booking', e);
+    } finally {
+      setIsCancelling(null);
     }
   };
 
@@ -233,8 +257,102 @@ export const StudentDashboard: React.FC = () => {
 
         {/* TWO-COLUMN LAYOUT: LIVE BUS MONITOR & TRAVEL DEMAND REQUESTS */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Left Column (8 cols): Available Buses & Network Feed */}
+          {/* Left Column (8 cols): Bookings + Available Buses & Network Feed */}
           <div className="lg:col-span-8 space-y-6">
+            {/* MY RESERVED SEATS & TICKETS (Part 6 Requirement) */}
+            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                    <Ticket className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h2 className="text-base font-bold text-navy-900">My Reserved Seats & Digital Passes</h2>
+                    <p className="text-xs text-slate-500">Live seat bookings linked to your student pass</p>
+                  </div>
+                </div>
+                <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  {bookings.filter(b => b.status === 'CONFIRMED').length} Active
+                </span>
+              </div>
+
+              {bookings.length === 0 ? (
+                <div className="p-6 text-center bg-slate-50 rounded-xl border border-dashed border-slate-200 text-xs text-slate-500 space-y-2">
+                  <p>You haven't reserved any seats yet today.</p>
+                  <Link
+                    to="/journey"
+                    className="inline-flex items-center gap-1.5 font-bold text-brand-blue hover:underline"
+                  >
+                    <span>Search bus timetables to reserve a seat →</span>
+                  </Link>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {bookings.map(b => (
+                    <div
+                      key={b.id}
+                      className={`p-4 rounded-xl border text-xs transition space-y-2 ${
+                        b.status === 'CONFIRMED'
+                          ? 'bg-gradient-to-r from-emerald-50/50 via-white to-white border-emerald-200 shadow-xs'
+                          : 'bg-slate-50 border-slate-200 opacity-60'
+                      }`}
+                    >
+                      <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-slate-100">
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono font-black text-navy-900 text-sm">{b.bookingReference}</span>
+                          <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${b.status === 'CONFIRMED' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}`}>
+                            {b.status}
+                          </span>
+                        </div>
+                        <div className="text-right">
+                          <span className="text-[10px] text-slate-400 block">Boarding Seat</span>
+                          <strong className="text-emerald-700 font-extrabold text-sm">Seat #{b.seatNumber}</strong>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
+                        <div>
+                          <span className="text-slate-400 block">Bus & Reg</span>
+                          <strong>{b.busNumber}</strong>
+                          <span className="text-[10px] text-slate-500 block font-mono">{b.registrationNumber}</span>
+                        </div>
+                        <div>
+                          <span className="text-slate-400 block">Route Journey</span>
+                          <strong className="text-brand-blue">{b.fromStop} ➔ {b.toStop}</strong>
+                        </div>
+                        <div>
+                          <span className="text-slate-400 block">Departure</span>
+                          <strong>{b.departureTime}</strong> ({b.travelDate})
+                        </div>
+                        <div>
+                          <span className="text-slate-400 block">Fare Paid</span>
+                          <strong className="text-slate-800">₹{b.farePaid} (Concession)</strong>
+                        </div>
+                      </div>
+
+                      {b.status === 'CONFIRMED' && (
+                        <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px]">
+                          <span className="text-slate-400 flex items-center gap-1 font-mono">
+                            <QrCode className="w-3.5 h-3.5 text-slate-600" />
+                            Digital Concession Token Active
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => handleCancelBooking(b.id)}
+                            disabled={isCancelling === b.id}
+                            className="px-3 py-1 rounded-lg border border-rose-300 text-rose-700 hover:bg-rose-50 font-bold transition flex items-center gap-1"
+                          >
+                            <XCircle className="w-3 h-3" />
+                            <span>{isCancelling === b.id ? 'Releasing Seat...' : 'Cancel Reservation'}</span>
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
             <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
               <div className="flex items-center justify-between mb-4">
                 <div>

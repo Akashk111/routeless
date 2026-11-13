@@ -10,6 +10,7 @@ import reportRoutes from './routes/reportRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
 import aiRoutes from './routes/aiRoutes.js';
 import demoRoutes from './routes/demoRoutes.js';
+import bookingRoutes from './routes/bookingRoutes.js';
 import { busSimulator } from './services/busSimulator.js';
 import { store } from './data/store.js';
 import { planJourneys } from './algorithms/dijkstra.js';
@@ -32,6 +33,7 @@ app.use((req, _res, next) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/buses', busRoutes);
 app.use('/api/journey', journeyRoutes);
+app.use('/api/bookings', bookingRoutes);
 app.use('/api/alternatives', alternativeRoutes);
 app.use('/api/requests', requestRoutes);
 app.use('/api/reports', reportRoutes);

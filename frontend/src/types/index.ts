@@ -55,6 +55,7 @@ export interface Bus {
   driverName?: string;
   driverPhone?: string;
   isSimulatedGps: boolean;
+  imageUrl?: string;
   
   // Real-time calculated fields
   nextStopName: string;
@@ -115,6 +116,7 @@ export interface JourneyLeg {
   occupiedSeats?: number;
   capacity: number;
   intermediateStops: string[];
+  imageUrl?: string;
 }
 
 export interface OptimizedJourney {
@@ -141,6 +143,28 @@ export interface OptimizedJourney {
   primaryOperator: string;
   primaryBusNumber?: string;
   primaryRegistrationNumber?: string;
+  imageUrl?: string;
+}
+
+export interface Booking {
+  id: string;
+  bookingReference: string;
+  tripId: string;
+  busId: string;
+  busNumber: string;
+  registrationNumber: string;
+  routeNumber: string;
+  fromStop: string;
+  toStop: string;
+  departureTime: string;
+  arrivalTime: string;
+  travelDate: string;
+  studentId: string;
+  passengerName: string;
+  seatNumber: number;
+  farePaid: number;
+  status: 'CONFIRMED' | 'CANCELLED';
+  bookedAt: string;
 }
 
 export interface TravelRequest {

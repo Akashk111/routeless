@@ -1,210 +1,64 @@
 import { User, Bus, Route, TravelRequest, TransportReport, AppNotification, BusStop, Trip, PassengerRecord } from '../types/index.js';
-import {
-  INITIAL_USERS,
-  INITIAL_BUSES,
-  INITIAL_ROUTES,
-  INITIAL_REQUESTS,
-  INITIAL_REPORTS,
-  INITIAL_NOTIFICATIONS,
-  ALL_BUS_STOPS,
-  INITIAL_TRIPS,
-  INITIAL_PASSENGERS
-} from './initialData.js';
+import { db, Booking } from '../db/database.js';
 
 class DataStore {
-  users: User[] = [];
-  buses: Bus[] = [];
-  routes: Route[] = [];
-  stops: BusStop[] = [];
-  trips: Trip[] = [];
-  passengers: PassengerRecord[] = [];
-  requests: TravelRequest[] = [];
-  reports: TransportReport[] = [];
-  notifications: AppNotification[] = [];
+  // Database Delegation
+  getBuses(): Bus[] { return db.getBuses(); }
+  getBusById(id: string): Bus | null { return db.getBusById(id); }
+  addBus(bus: Bus): Bus { return db.addBus(bus); }
+  updateBus(id: string, updates: Partial<Bus>): Bus | null { return db.updateBus(id, updates); }
+  deleteBus(id: string): boolean { return db.deleteBus(id); }
 
-  constructor() {
-    this.reset();
-  }
+  getRoutes(): Route[] { return db.getRoutes(); }
+  getRouteById(id: string): Route | null { return db.getRouteById(id); }
+  addRoute(route: Route): Route { return db.addRoute(route); }
+  updateRoute(id: string, updates: Partial<Route>): Route | null { return db.updateRoute(id, updates); }
+  deleteRoute(id: string): boolean { return db.deleteRoute(id); }
 
-  reset() {
-    this.users = JSON.parse(JSON.stringify(INITIAL_USERS));
-    this.buses = JSON.parse(JSON.stringify(INITIAL_BUSES));
-    this.routes = JSON.parse(JSON.stringify(INITIAL_ROUTES));
-    this.stops = JSON.parse(JSON.stringify(ALL_BUS_STOPS));
-    this.trips = JSON.parse(JSON.stringify(INITIAL_TRIPS));
-    this.passengers = JSON.parse(JSON.stringify(INITIAL_PASSENGERS));
-    this.requests = JSON.parse(JSON.stringify(INITIAL_REQUESTS));
-    this.reports = JSON.parse(JSON.stringify(INITIAL_REPORTS));
-    this.notifications = JSON.parse(JSON.stringify(INITIAL_NOTIFICATIONS));
-  }
+  getStops(query?: string): BusStop[] { return db.getStops(query); }
+  getStopById(id: string): BusStop | null { return db.getStopById(id); }
 
-  // Stops
-  getStops() { return this.stops; }
-  getStopById(id: string) { return this.stops.find(s => s.id === id); }
+  getTrips(routeId?: string): Trip[] { return db.getTrips(routeId); }
+  getTripById(id: string): Trip | null { return db.getTripById(id); }
 
-  // Trips
-  getTrips(routeId?: string) {
-    if (routeId && routeId !== 'all') {
-      return this.trips.filter(t => t.routeId === routeId);
-    }
-    return this.trips;
-  }
-  getTripById(id: string) { return this.trips.find(t => t.id === id); }
+  getPassengers(tripId?: string): PassengerRecord[] { return db.getPassengers(tripId); }
 
-  // Passengers
-  getPassengers(tripId?: string) {
-    if (tripId && tripId !== 'all') {
-      return this.passengers.filter(p => p.tripId === tripId);
-    }
-    return this.passengers;
+  getBookings(studentId?: string): Booking[] { return db.getBookings(studentId); }
+  createBooking(data: {
+    tripId: string;
+    busId?: string;
+    fromStop: string;
+    toStop: string;
+    departureTime: string;
+    arrivalTime: string;
+    travelDate: string;
+    studentId: string;
+    passengerName: string;
+    farePaid?: number;
+  }) {
+    return db.createBooking(data);
   }
+  cancelBooking(bookingId: string) { return db.cancelBooking(bookingId); }
 
-  // Buses
-  getBuses() { return this.buses; }
-  getBusById(id: string) { return this.buses.find(b => b.id === id); }
-  getBusLocation(id: string) {
-    const bus = this.buses.find(b => b.id === id || b.busNumber === id || b.registrationNumber === id);
-    if (!bus) return null;
-    return {
-      busId: bus.id,
-      busNumber: bus.busNumber,
-      registrationNumber: bus.registrationNumber,
-      routeName: bus.routeName,
-      routeNumber: bus.routeNumber,
-      latitude: bus.currentLat,
-      longitude: bus.currentLng,
-      speedKmH: bus.speedKmH,
-      heading: bus.heading,
-      status: bus.status,
-      nextStop: bus.nextStopName,
-      distanceToNextStopKm: bus.distanceToNextStopKm,
-      remainingDistanceKm: bus.remainingDistanceKm,
-      etaNextStop: bus.etaNextStop,
-      etaDestination: bus.etaDestination,
-      lastUpdated: bus.lastUpdated,
-      isSimulatedGps: bus.isSimulatedGps ?? true,
-      label: bus.isSimulatedGps ? 'DEMO GPS SIMULATOR' : 'HARDWARE GPS'
-    };
-  }
-  updateBus(id: string, updates: Partial<Bus>) {
-    const idx = this.buses.findIndex(b => b.id === id);
-    if (idx !== -1) {
-      this.buses[idx] = { ...this.buses[idx], ...updates, lastUpdated: new Date().toISOString() };
-      return this.buses[idx];
-    }
-    return null;
-  }
-  addBus(bus: Bus) {
-    this.buses.push(bus);
-    return bus;
-  }
-  deleteBus(id: string) {
-    const idx = this.buses.findIndex(b => b.id === id);
-    if (idx !== -1) {
-      return this.buses.splice(idx, 1)[0];
-    }
-    return null;
-  }
+  getRequests(): TravelRequest[] { return db.getRequests(); }
+  addRequest(req: TravelRequest): TravelRequest { return db.addRequest(req); }
+  updateRequestStatus(id: string, status: TravelRequest['status']): boolean { return db.updateRequestStatus(id, status); }
 
-  // Routes
-  getRoutes() { return this.routes; }
-  getRouteById(id: string) { return this.routes.find(r => r.id === id); }
-  updateRoute(id: string, updates: Partial<Route>) {
-    const idx = this.routes.findIndex(r => r.id === id);
-    if (idx !== -1) {
-      this.routes[idx] = { ...this.routes[idx], ...updates };
-      return this.routes[idx];
-    }
-    return null;
-  }
-  addRoute(route: Route) {
-    this.routes.push(route);
-    return route;
-  }
-  deleteRoute(id: string) {
-    const idx = this.routes.findIndex(r => r.id === id);
-    if (idx !== -1) {
-      return this.routes.splice(idx, 1)[0];
-    }
-    return null;
-  }
+  getReports(): TransportReport[] { return db.getReports(); }
+  addReport(rep: TransportReport): TransportReport { return db.addReport(rep); }
+  updateReportStatus(id: string, status: TransportReport['status'], notes?: string): boolean { return db.updateReportStatus(id, status, notes); }
 
-  // Requests
-  getRequests() { return this.requests; }
-  addRequest(req: TravelRequest) {
-    this.requests.unshift(req);
-    // Add admin alert notification
-    this.addNotification({
-      id: `notif-${Date.now()}`,
-      targetRole: 'admin',
-      title: `New Student Travel Request: ${req.origin} → ${req.destination}`,
-      message: `${req.studentName} requested travel for ${req.passengerCount} passengers (${req.departureWindow}).`,
-      type: 'info',
-      read: false,
-      createdAt: new Date().toISOString(),
-      actionUrl: '/admin'
-    });
-    return req;
-  }
-  updateRequestStatus(id: string, status: TravelRequest['status']) {
-    const req = this.requests.find(r => r.id === id);
-    if (req) {
-      req.status = status;
-      return req;
-    }
-    return null;
-  }
+  getNotifications(role?: string): AppNotification[] { return db.getNotifications(role); }
+  addNotification(n: AppNotification): AppNotification { return db.addNotification(n); }
+  markNotificationRead(id: string): boolean { return db.markNotificationRead(id); }
 
-  // Reports
-  getReports() { return this.reports; }
-  addReport(report: TransportReport) {
-    this.reports.unshift(report);
-    // Add alert notification
-    this.addNotification({
-      id: `notif-rep-${Date.now()}`,
-      targetRole: 'all',
-      title: `Transport Issue Reported: ${report.category}`,
-      message: `${report.location}: ${report.description.substring(0, 80)}...`,
-      type: 'warning',
-      read: false,
-      createdAt: new Date().toISOString(),
-      actionUrl: '/reports'
-    });
-    return report;
-  }
-  updateReportStatus(id: string, status: TransportReport['status'], adminNotes?: string) {
-    const rep = this.reports.find(r => r.id === id);
-    if (rep) {
-      rep.status = status;
-      if (adminNotes !== undefined) rep.adminNotes = adminNotes;
-      return rep;
-    }
-    return null;
-  }
+  getUsers(): User[] { return db.getUsers(); }
+  getUserByEmail(email: string): User | null { return db.getUserByEmail(email); }
+  getUserById(id: string): User | null { return db.getUserById(id); }
+  addUser(user: User): User { return db.addUser(user); }
 
-  // Notifications
-  getNotifications(role?: string) {
-    if (!role || role === 'all') return this.notifications;
-    return this.notifications.filter(n => n.targetRole === 'all' || n.targetRole === role);
-  }
-  markNotificationRead(id: string) {
-    const n = this.notifications.find(item => item.id === id);
-    if (n) n.read = true;
-    return n;
-  }
-  addNotification(n: AppNotification) {
-    this.notifications.unshift(n);
-    return n;
-  }
-
-  // Users
-  getUsers() { return this.users; }
-  getUserByEmail(email: string) { return this.users.find(u => u.email.toLowerCase() === email.toLowerCase()); }
-  getUserById(id: string) { return this.users.find(u => u.id === id); }
-  addUser(user: User) {
-    this.users.push(user);
-    return user;
-  }
+  getBusLocation(id: string) { return db.getBusLocation(id); }
 }
 
 export const store = new DataStore();
+export { db };

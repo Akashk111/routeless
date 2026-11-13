@@ -5,6 +5,7 @@ import L from 'leaflet';
 import { api } from '../services/api.js';
 import { Bus, Route, BusType } from '../types/index.js';
 import { StatusBadge } from '../components/common/StatusBadge.js';
+import { getBusImage, handleImageFallback } from '../utils/busImages.js';
 import {
   Radio,
   MapPin,
@@ -236,7 +237,15 @@ export const LiveTrackingPage: React.FC = () => {
                     }}
                   >
                     <Popup>
-                      <div className="text-xs p-1 space-y-1.5 min-w-[200px]">
+                      <div className="text-xs p-1 space-y-1.5 min-w-[220px]">
+                        <div className="aspect-[16/9] w-full rounded-lg overflow-hidden bg-slate-100 mb-1 border border-slate-200">
+                          <img
+                            src={bus.imageUrl || getBusImage(bus.busType, bus.busNumber)}
+                            onError={(e) => handleImageFallback(e, bus.busType, bus.busNumber)}
+                            alt={bus.busNumber}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
                         <div className="flex items-center justify-between">
                           <strong className="text-navy-900 font-extrabold">{bus.busNumber}</strong>
                           <StatusBadge status={bus.status} size="sm" />
@@ -325,6 +334,25 @@ export const LiveTrackingPage: React.FC = () => {
             {/* SELECTED BUS DETAILED INFORMATION PANEL (Section 6 Requirement) */}
             {selectedBus && (
               <div className="bg-white p-5 rounded-2xl border-2 border-brand-blue shadow-md text-xs space-y-4 animate-fadeIn">
+                {/* Visual Bus Photo Header */}
+                <div className="relative aspect-[16/9] w-full rounded-xl overflow-hidden bg-slate-900 border border-slate-200 group">
+                  <img
+                    src={selectedBus.imageUrl || getBusImage(selectedBus.busType, selectedBus.busNumber)}
+                    onError={(e) => handleImageFallback(e, selectedBus.busType, selectedBus.busNumber)}
+                    alt={selectedBus.busNumber}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-navy-950/80 via-transparent to-transparent"></div>
+                  <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between text-white text-[11px]">
+                    <span className="font-mono font-bold bg-navy-900/90 px-2 py-0.5 rounded border border-slate-700">
+                      {selectedBus.busNumber}
+                    </span>
+                    <span className="font-bold text-amber-300">
+                      {selectedBus.availableSeats} seats free
+                    </span>
+                  </div>
+                </div>
+
                 <div className="flex items-center justify-between pb-3 border-b border-slate-100">
                   <div>
                     <span className="text-[10px] uppercase font-bold text-slate-400">

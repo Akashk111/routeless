@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 360" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgG" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#F1F5F9"/>
+      <stop offset="100%" stop-color="#E2E8F0"/>
+    </linearGradient>
+    <linearGradient id="busRed" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#DC2626"/>
+      <stop offset="60%" stop-color="#B91C1C"/>
+      <stop offset="100%" stop-color="#991B1B"/>
+    </linearGradient>
+    <linearGradient id="busGlass" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#BAE6FD"/>
+      <stop offset="100%" stop-color="#38BDF8"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="360" rx="16" fill="url(#bgG)"/>
+  <!-- Road Surface -->
+  <rect y="280" width="600" height="80" fill="#334155"/>
+  <line x1="0" y1="320" x2="600" y2="320" stroke="#FDE047" stroke-width="3" stroke-dasharray="25 20"/>
+
+  <!-- Bus Shadow -->
+  <ellipse cx="300" cy="295" rx="230" ry="18" fill="#000000" opacity="0.35"/>
+
+  <!-- Bus Body -->
+  <path d="M 80 110 Q 80 95 95 95 L 485 95 Q 515 95 520 125 L 525 245 Q 525 260 505 260 L 90 260 Q 80 260 80 245 Z" fill="url(#busRed)"/>
+  <rect x="80" y="210" width="445" height="18" fill="#FEF3C7"/>
+  <text x="130" y="223" font-family="sans-serif" font-size="10" font-weight="900" fill="#991B1B" letter-spacing="1.5">KSRTC • KARNATAKA SARIGE</text>
+
+  <!-- Destination Board -->
+  <rect x="400" y="105" width="105" height="20" rx="3" fill="#0F172A"/>
+  <text x="452" y="119" font-family="monospace" font-size="10" font-weight="bold" fill="#FDE047" text-anchor="middle">ROUTE 14B</text>
+
+  <!-- Front Windshield -->
+  <path d="M 420 130 L 512 130 L 517 195 L 420 195 Z" fill="url(#busGlass)"/>
+
+  <!-- Windows -->
+  <g fill="url(#busGlass)">
+    <rect x="95" y="130" width="44" height="55" rx="4"/>
+    <rect x="148" y="130" width="46" height="55" rx="4"/>
+    <rect x="202" y="130" width="46" height="55" rx="4"/>
+    <rect x="256" y="130" width="46" height="55" rx="4"/>
+    <rect x="310" y="130" width="46" height="55" rx="4"/>
+    <rect x="364" y="130" width="46" height="55" rx="4"/>
+  </g>
+
+  <!-- Registration Plate -->
+  <rect x="460" y="250" width="55" height="12" rx="2" fill="#FDE047"/>
+  <text x="487" y="259" font-family="monospace" font-size="8" font-weight="900" fill="#000" text-anchor="middle">KA-19-F-1401</text>
+
+  <!-- Wheels -->
+  <circle cx="155" cy="265" r="32" fill="#0F172A"/>
+  <circle cx="155" cy="265" r="24" fill="#334155"/>
+  <circle cx="155" cy="265" r="14" fill="#94A3B8"/>
+  <circle cx="445" cy="265" r="32" fill="#0F172A"/>
+  <circle cx="445" cy="265" r="24" fill="#334155"/>
+  <circle cx="445" cy="265" r="14" fill="#94A3B8"/>
+
+  <!-- Category Badge -->
+  <g transform="translate(20, 20)">
+    <rect width="130" height="28" rx="8" fill="#DC2626"/>
+    <text x="65" y="18" font-family="sans-serif" font-size="11" font-weight="bold" fill="#FFF" text-anchor="middle">KSRTC Ordinary</text>
+  </g>
+</svg>
