@@ -1,5 +1,9 @@
 export type UserRole = 'student' | 'admin' | 'operator';
 
+export type BusType = 'KSRTC Ordinary' | 'Express' | 'Private Route' | 'College Shuttle' | 'Shared Feeder';
+
+export type BusStatus = 'On Time' | 'Delayed' | 'Approaching Stop' | 'Cancelled' | 'Full Capacity' | 'Out of Service';
+
 export interface User {
   id: string;
   name: string;
@@ -13,14 +17,28 @@ export interface User {
   createdAt: string;
 }
 
-export type BusStatus = 'On Time' | 'Delayed' | 'Approaching Stop' | 'Cancelled' | 'Full Capacity' | 'Out of Service';
+export interface BusStop {
+  id: string;
+  name: string;
+  latitude: number;
+  longitude: number;
+  sequence: number;
+  distanceFromStartKm: number;
+  villageTag?: string;
+  isHub?: boolean;
+}
 
 export interface Bus {
   id: string;
   busNumber: string;
+  busName: string;
+  busType: BusType;
   operator: string;
   routeId: string;
   routeName: string;
+  origin: string;
+  destination: string;
+  stops: string[];
   capacity: number;
   availableSeats: number;
   status: BusStatus;
@@ -34,16 +52,17 @@ export interface Bus {
   driverName?: string;
   driverPhone?: string;
   isSimulatedGps: boolean;
-}
-
-export interface BusStop {
-  id: string;
-  name: string;
-  latitude: number;
-  longitude: number;
-  sequence: number;
-  villageTag?: string;
-  isHub?: boolean;
+  
+  // Real-time calculated fields
+  nextStopName: string;
+  distanceToNextStopKm: number;
+  remainingDistanceKm: number;
+  etaNextStop: string;
+  etaDestination: string;
+  fareRupees: number;
+  scheduledDeparture: string;
+  scheduledArrival: string;
+  totalDistanceKm: number;
 }
 
 export interface Route {
@@ -57,23 +76,62 @@ export interface Route {
   estimatedDurationMin: number;
   fareRupees: number;
   status: 'Active' | 'Disrupted' | 'Suspended';
+  operatingDays: string;
+  busType: BusType;
   stops: BusStop[];
+  associatedBusIds: string[];
   schedule: {
     departureTime: string;
     arrivalTime: string;
     busId: string;
+    busNumber: string;
+    busType: BusType;
+    operator: string;
+    fareRupees: number;
   }[];
 }
 
-export interface Trip {
-  id: string;
-  busId: string;
+export interface JourneyLeg {
   routeId: string;
+  routeNumber: string;
+  routeName: string;
+  busId: string;
+  busNumber: string;
+  busType: BusType;
+  busStatus: string;
+  operator: string;
+  fromStop: string;
+  toStop: string;
   departureTime: string;
   arrivalTime: string;
-  tripStatus: 'Scheduled' | 'In Progress' | 'Completed' | 'Delayed' | 'Cancelled';
-  assignedDriver: string;
-  occupancyPercent: number;
+  durationMin: number;
+  distanceKm: number;
+  fareRupees: number;
+  availableSeats: number;
+  capacity: number;
+  intermediateStops: string[];
+}
+
+export interface OptimizedJourney {
+  id: string;
+  type: 'fastest' | 'fewest_transfers' | 'cheapest' | 'shortest_distance';
+  origin: string;
+  destination: string;
+  departureTime: string;
+  arrivalTime: string;
+  totalDurationMin: number;
+  totalDistanceKm: number;
+  totalFareRupees: number;
+  transferCount: number;
+  transfersAt: string[];
+  waitingTimeMin: number;
+  legs: JourneyLeg[];
+  statusSummary: 'Optimal' | 'Delayed' | 'Full Capacity' | 'Cancelled';
+  advisoryNote?: string;
+  availableSeats: number;
+  minAvailableSeatsInLegs: number;
+  primaryBusType: BusType;
+  primaryOperator: string;
 }
 
 export interface TravelRequest {
@@ -84,7 +142,7 @@ export interface TravelRequest {
   origin: string;
   destination: string;
   travelDate: string;
-  departureWindow: string; // e.g. "07:30 - 08:30"
+  departureWindow: string;
   passengerCount: number;
   status: 'PENDING' | 'GROUPED' | 'ADDITIONAL_BUS_ASSIGNED' | 'REJECTED';
   notes?: string;
@@ -130,9 +188,10 @@ export interface AlternativeOption {
   arrivalTime: string;
   durationMin: number;
   fareRupees: number;
+  distanceKm: number;
   walkingDistanceMeters: number;
   walkingDurationMin: number;
-  score: number; // 0 - 100
+  score: number;
   scoreBreakdown: {
     timeScore: number;
     costScore: number;

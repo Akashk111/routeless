@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../services/api.js';
 import { useAuth } from '../context/AuthContext.js';
-import { Bus, Route, TravelRequest, TransportReport, BusStatus } from '../types/index.js';
+import { Bus, Route, TravelRequest, TransportReport, BusStatus, BusType } from '../types/index.js';
 import { StatusBadge } from '../components/common/StatusBadge.js';
 import {
   ShieldCheck,
@@ -17,7 +17,10 @@ import {
   RefreshCw,
   ExternalLink,
   ChevronRight,
-  Filter
+  Filter,
+  SlidersHorizontal,
+  Clock,
+  Radio
 } from 'lucide-react';
 
 export const AdminDashboard: React.FC = () => {
@@ -32,12 +35,13 @@ export const AdminDashboard: React.FC = () => {
 
   // Add Bus Modal State
   const [showAddBusModal, setShowAddBusModal] = useState(false);
-  const [newBusNumber, setNewBusNumber] = useState('KA-19-F-8800');
+  const [newBusNumber, setNewBusNumber] = useState('KA-19-F-8820');
+  const [newBusName, setNewBusName] = useState('Moodbidri Express Feeder');
+  const [newBusType, setNewBusType] = useState<BusType>('KSRTC Ordinary');
   const [newBusOperator, setNewBusOperator] = useState('KSRTC Rural Gramina Sarige');
   const [newBusRouteId, setNewBusRouteId] = useState('route-14b');
   const [newBusCapacity, setNewBusCapacity] = useState(50);
   const [newBusSeats, setNewBusSeats] = useState(50);
-  const [newBusStatus, setNewBusStatus] = useState<BusStatus>('On Time');
 
   // Flash message
   const [flashMessage, setFlashMessage] = useState<string | null>(null);
@@ -66,11 +70,28 @@ export const AdminDashboard: React.FC = () => {
     }
   };
 
-  const handleUpdateBusStatus = async (busId: string, status: BusStatus) => {
+  const handleUpdateBusStatus = async (busId: string, status: BusStatus, delayMinutes: number = 0) => {
     try {
-      const updated = await api.updateBus(busId, { status });
+      const updates: Partial<Bus> = { status, delayMinutes };
+      if (status === 'Full Capacity') updates.availableSeats = 0;
+      if (status === 'Cancelled') {
+        updates.availableSeats = 0;
+        updates.speedKmH = 0;
+      }
+
+      const updated = await api.updateBus(busId, updates);
       setBuses(prev => prev.map(b => b.id === busId ? updated : b));
-      showFlash(`Bus ${updated.busNumber} updated to ${status}.`);
+      showFlash(`Bus ${updated.busNumber} updated to ${status}. Changes active in student journey planner.`);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleUpdateSeats = async (busId: string, availableSeats: number) => {
+    try {
+      const updated = await api.updateBus(busId, { availableSeats });
+      setBuses(prev => prev.map(b => b.id === busId ? updated : b));
+      showFlash(`Bus ${updated.busNumber} seats updated to ${availableSeats}.`);
     } catch (e) {
       console.error(e);
     }
@@ -93,18 +114,24 @@ export const AdminDashboard: React.FC = () => {
       const selRoute = routes.find(r => r.id === newBusRouteId);
       const created = await api.addBus({
         busNumber: newBusNumber,
+        busName: newBusName,
+        busType: newBusType,
         operator: newBusOperator,
         routeId: newBusRouteId,
         routeName: selRoute?.routeName || 'Route 14B',
+        origin: selRoute?.origin || 'Kinnigoli',
+        destination: selRoute?.destination || 'Moodbidri',
         capacity: newBusCapacity,
         availableSeats: newBusSeats,
-        status: newBusStatus,
-        currentLat: 13.0854,
-        currentLng: 74.8722
+        status: 'On Time',
+        currentLat: selRoute?.stops[0]?.latitude || 13.0854,
+        currentLng: selRoute?.stops[0]?.longitude || 74.8722,
+        fareRupees: selRoute?.fareRupees || 35,
+        totalDistanceKm: selRoute?.distanceKm || 28.5
       });
       setBuses(prev => [...prev, created]);
       setShowAddBusModal(false);
-      showFlash(`New bus ${created.busNumber} registered into network.`);
+      showFlash(`New bus ${created.busNumber} registered into regional network.`);
     } catch (e) {
       console.error(e);
     }
@@ -160,7 +187,7 @@ export const AdminDashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto space-y-8">
+      <div className="max-w-7xl mx-auto space-y-6">
         {/* HEADER */}
         <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div>
@@ -170,7 +197,7 @@ export const AdminDashboard: React.FC = () => {
             </div>
             <h1 className="text-2xl font-extrabold text-navy-900">Administrator Console</h1>
             <p className="text-xs text-slate-500 mt-0.5">
-              Logged in as: <strong>{user?.name}</strong> (KSRTC Rural Controller, Dakshina Kannada Division)
+              Logged in: <strong>{user?.name}</strong> • KSRTC Rural Transit Controller, Dakshina Kannada Division
             </p>
           </div>
 
@@ -188,7 +215,7 @@ export const AdminDashboard: React.FC = () => {
               className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs shadow-sm transition flex items-center gap-1"
             >
               <RotateCcw className="w-3.5 h-3.5" />
-              <span>Reset Demo State</span>
+              <span>Reset State</span>
             </button>
 
             <button
@@ -222,7 +249,7 @@ export const AdminDashboard: React.FC = () => {
           <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
             <span className="text-slate-400 text-[10px] uppercase font-bold block">Rural Corridors</span>
             <div className="text-2xl font-black text-brand-blue mt-1">{routes.length} Routes</div>
-            <span className="text-[10px] text-slate-500 font-medium">All active</span>
+            <span className="text-[10px] text-slate-500 font-medium">Dakshina Kannada network</span>
           </div>
 
           <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
@@ -244,7 +271,7 @@ export const AdminDashboard: React.FC = () => {
           <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
             <span className="text-slate-400 text-[10px] uppercase font-bold block">Network Integrity</span>
             <div className="text-2xl font-black text-emerald-600 mt-1">94.8%</div>
-            <span className="text-[10px] text-slate-500 font-medium">Auto-rerouting active</span>
+            <span className="text-[10px] text-slate-500 font-medium">Automatic fallback ready</span>
           </div>
         </div>
 
@@ -257,7 +284,7 @@ export const AdminDashboard: React.FC = () => {
             }`}
           >
             <BusIcon className="w-4 h-4" />
-            <span>Bus Management ({buses.length})</span>
+            <span>Bus Fleet Management ({buses.length})</span>
           </button>
 
           <button
@@ -267,7 +294,7 @@ export const AdminDashboard: React.FC = () => {
             }`}
           >
             <RouteIcon className="w-4 h-4" />
-            <span>Routes & Stops ({routes.length})</span>
+            <span>Routes & Stops Database ({routes.length})</span>
           </button>
 
           <button
@@ -277,7 +304,7 @@ export const AdminDashboard: React.FC = () => {
             }`}
           >
             <Users className="w-4 h-4" />
-            <span>Student Requests ({requests.length})</span>
+            <span>Student Demand Requests ({requests.length})</span>
           </button>
 
           <button
@@ -291,13 +318,13 @@ export const AdminDashboard: React.FC = () => {
           </button>
         </div>
 
-        {/* TAB 1: BUS MANAGEMENT */}
+        {/* TAB 1: BUS MANAGEMENT (Section 10 Requirement) */}
         {activeTab === 'buses' && (
           <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-base font-bold text-navy-900">Registered Bus Fleet</h2>
-                <p className="text-xs text-slate-500">Update capacity, toggle delay status, or simulate cancellations</p>
+                <h2 className="text-base font-bold text-navy-900">Active Bus Fleet Database ({buses.length})</h2>
+                <p className="text-xs text-slate-500">Live operational status, route assignment, seats, and simulated breakdown controls</p>
               </div>
 
               <button
@@ -305,7 +332,7 @@ export const AdminDashboard: React.FC = () => {
                 className="px-3.5 py-1.5 bg-brand-blue hover:bg-brand-blue-dark text-white rounded-xl text-xs font-bold shadow-sm transition flex items-center gap-1"
               >
                 <Plus className="w-4 h-4" />
-                <span>Add Bus</span>
+                <span>Add Bus to Fleet</span>
               </button>
             </div>
 
@@ -313,48 +340,96 @@ export const AdminDashboard: React.FC = () => {
               <table className="w-full text-left text-xs">
                 <thead>
                   <tr className="border-b border-slate-200 text-slate-400 uppercase text-[10px] font-bold">
-                    <th className="py-3 px-2">Bus Number</th>
-                    <th className="py-3 px-2">Route</th>
-                    <th className="py-3 px-2">Operator</th>
+                    <th className="py-3 px-2">Bus Reg / Name</th>
+                    <th className="py-3 px-2">Type & Operator</th>
+                    <th className="py-3 px-2">Route Corridor</th>
+                    <th className="py-3 px-2">Next Stop & ETA</th>
                     <th className="py-3 px-2">Seats (Free / Cap)</th>
                     <th className="py-3 px-2">Status</th>
-                    <th className="py-3 px-2 text-right">Quick Actions</th>
+                    <th className="py-3 px-2 text-right">Quick Admin Controls</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
                   {buses.map(bus => (
                     <tr key={bus.id} className="hover:bg-slate-50 transition">
-                      <td className="py-3 px-2 font-bold text-navy-900">{bus.busNumber}</td>
-                      <td className="py-3 px-2 text-slate-700">{bus.routeName}</td>
-                      <td className="py-3 px-2 text-slate-500">{bus.operator}</td>
-                      <td className="py-3 px-2 font-semibold">
-                        <span className={bus.availableSeats > 5 ? 'text-emerald-600' : 'text-rose-600'}>
-                          {bus.availableSeats}
-                        </span>
-                        <span className="text-slate-400"> / {bus.capacity}</span>
+                      <td className="py-3 px-2">
+                        <div className="font-extrabold text-navy-900">{bus.busNumber}</div>
+                        <div className="text-[10px] text-slate-500">{bus.busName}</div>
                       </td>
+
+                      <td className="py-3 px-2">
+                        <span className="font-semibold text-slate-700">{bus.busType}</span>
+                        <div className="text-[10px] text-slate-400">{bus.operator}</div>
+                      </td>
+
+                      <td className="py-3 px-2">
+                        <div className="text-slate-800 font-semibold">{bus.routeName}</div>
+                        <div className="text-[10px] text-slate-400">{bus.origin} ➔ {bus.destination} ({bus.totalDistanceKm} km)</div>
+                      </td>
+
+                      <td className="py-3 px-2">
+                        <div className="font-bold text-slate-800">{bus.nextStopName.split(' ')[0]}</div>
+                        <div className="text-[10px] text-brand-blue">ETA: {bus.etaNextStop} ({bus.distanceToNextStopKm} km)</div>
+                      </td>
+
+                      <td className="py-3 px-2">
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="number"
+                            min="0"
+                            max={bus.capacity}
+                            value={bus.availableSeats}
+                            onChange={e => handleUpdateSeats(bus.id, Number(e.target.value))}
+                            className="w-14 bg-slate-100 border border-slate-300 rounded px-1.5 py-0.5 text-center font-bold text-xs"
+                          />
+                          <span className="text-slate-400">/ {bus.capacity}</span>
+                        </div>
+                      </td>
+
                       <td className="py-3 px-2">
                         <StatusBadge status={bus.status} size="sm" />
                       </td>
-                      <td className="py-3 px-2 text-right space-x-2">
-                        {/* Status switcher */}
-                        <select
-                          value={bus.status}
-                          onChange={e => handleUpdateBusStatus(bus.id, e.target.value as BusStatus)}
-                          className="bg-slate-100 border border-slate-300 rounded-lg px-2 py-1 text-[11px] font-semibold"
+
+                      <td className="py-3 px-2 text-right space-x-1.5">
+                        {/* 1-Click Status Controls */}
+                        <button
+                          onClick={() => handleUpdateBusStatus(bus.id, 'On Time', 0)}
+                          title="Mark On Time"
+                          className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-bold text-[10px] border border-emerald-200"
                         >
-                          <option value="On Time">On Time</option>
-                          <option value="Delayed">Delayed</option>
-                          <option value="Full Capacity">Full Capacity</option>
-                          <option value="Cancelled">Cancelled</option>
-                        </select>
+                          On Time
+                        </button>
+
+                        <button
+                          onClick={() => handleUpdateBusStatus(bus.id, 'Delayed', 20)}
+                          title="Mark Delayed +20m"
+                          className="px-2 py-0.5 rounded bg-amber-50 text-amber-700 hover:bg-amber-100 font-bold text-[10px] border border-amber-200"
+                        >
+                          +20m Late
+                        </button>
+
+                        <button
+                          onClick={() => handleUpdateBusStatus(bus.id, 'Full Capacity', 0)}
+                          title="Mark Full (0 seats)"
+                          className="px-2 py-0.5 rounded bg-purple-50 text-purple-700 hover:bg-purple-100 font-bold text-[10px] border border-purple-200"
+                        >
+                          Full
+                        </button>
+
+                        <button
+                          onClick={() => handleUpdateBusStatus(bus.id, 'Cancelled', 0)}
+                          title="Cancel bus service"
+                          className="px-2 py-0.5 rounded bg-rose-50 text-rose-700 hover:bg-rose-100 font-bold text-[10px] border border-rose-200"
+                        >
+                          Cancel
+                        </button>
 
                         <button
                           onClick={() => handleDeleteBus(bus.id)}
                           className="p-1 text-slate-400 hover:text-rose-600 transition"
                           title="Delete bus"
                         >
-                          <Trash2 className="w-4 h-4" />
+                          <Trash2 className="w-3.5 h-3.5" />
                         </button>
                       </td>
                     </tr>
@@ -365,12 +440,12 @@ export const AdminDashboard: React.FC = () => {
           </div>
         )}
 
-        {/* TAB 2: ROUTES & BUS STOPS */}
+        {/* TAB 2: ROUTES & BUS STOPS (Section 2 Requirement) */}
         {activeTab === 'routes' && (
           <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4">
             <div>
-              <h2 className="text-base font-bold text-navy-900">Rural Transit Corridors</h2>
-              <p className="text-xs text-slate-500">Sequential stops, transfer junctions, and fare matrices</p>
+              <h2 className="text-base font-bold text-navy-900">Interconnected Rural Routes Database ({routes.length})</h2>
+              <p className="text-xs text-slate-500">Official routes with cumulative distance in km, stop sequences, and schedules</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -381,11 +456,24 @@ export const AdminDashboard: React.FC = () => {
                       {r.routeNumber} • {r.routeName}
                     </span>
                     <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-brand-blue">
-                      ₹{r.fareRupees} • {r.estimatedDurationMin}m
+                      {r.distanceKm} km • ₹{r.fareRupees}
                     </span>
                   </div>
+
                   <div className="text-[11px] text-slate-500">
-                    Stops ({r.stops.length}): {r.stops.map(s => s.name).join(' → ')}
+                    <strong>Intermediate Stops ({r.stops.length}):</strong>
+                    <div className="mt-1 flex flex-wrap gap-1">
+                      {r.stops.map(s => (
+                        <span key={s.id} className="px-1.5 py-0.5 bg-white border border-slate-200 rounded text-[10px] text-slate-700">
+                          {s.name} ({s.distanceFromStartKm} km)
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between text-[11px] text-slate-500 pt-1 border-t border-slate-200">
+                    <span>Operating: <strong>{r.operatingDays}</strong> ({r.busType})</span>
+                    <span>Schedules: <strong>{r.schedule.length} trips daily</strong></span>
                   </div>
                 </div>
               ))}
@@ -398,8 +486,8 @@ export const AdminDashboard: React.FC = () => {
           <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-base font-bold text-navy-900">Student Travel Demands</h2>
-                <p className="text-xs text-slate-500">Crowdsourced transit needs from rural colleges</p>
+                <h2 className="text-base font-bold text-navy-900">Student Travel Demand Aggregation</h2>
+                <p className="text-xs text-slate-500">Group travel requests from rural villages</p>
               </div>
             </div>
 
@@ -408,13 +496,13 @@ export const AdminDashboard: React.FC = () => {
                 <div key={req.id} className="p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-2">
                   <div className="flex items-center justify-between">
                     <div className="font-bold text-slate-800 text-sm">
-                      {req.origin} → {req.destination}
+                      {req.origin} ➔ {req.destination}
                     </div>
                     <StatusBadge status={req.status} size="sm" />
                   </div>
                   <div className="flex justify-between text-slate-600 text-[11px]">
-                    <span>Requested by: <strong>{req.studentName}</strong> ({req.passengerCount} passengers)</span>
-                    <span>Departure window: <strong>{req.departureWindow}</strong></span>
+                    <span>Student: <strong>{req.studentName}</strong> ({req.passengerCount} passengers)</span>
+                    <span>Window: <strong>{req.departureWindow}</strong></span>
                   </div>
                   {req.notes && <div className="text-[11px] text-slate-500 italic">"{req.notes}"</div>}
                   <div className="pt-2 flex items-center gap-2 border-t border-slate-200/60">
@@ -469,7 +557,7 @@ export const AdminDashboard: React.FC = () => {
                         onClick={() => handleResolveReport(rep.id)}
                         className="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-xs"
                       >
-                        Resolve & Add Note
+                        Resolve & Add Resolution Note
                       </button>
                     )}
                   </div>
@@ -496,19 +584,47 @@ export const AdminDashboard: React.FC = () => {
                     value={newBusNumber}
                     onChange={e => setNewBusNumber(e.target.value)}
                     required
-                    className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2"
+                    placeholder="e.g. KA-19-F-8820"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 font-bold"
                   />
                 </div>
 
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">Operator</label>
+                  <label className="block font-bold text-slate-700 mb-1">Bus Name / Service</label>
                   <input
                     type="text"
-                    value={newBusOperator}
-                    onChange={e => setNewBusOperator(e.target.value)}
+                    value={newBusName}
+                    onChange={e => setNewBusName(e.target.value)}
                     required
                     className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2"
                   />
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Bus Type</label>
+                    <select
+                      value={newBusType}
+                      onChange={e => setNewBusType(e.target.value as BusType)}
+                      className="w-full bg-slate-50 border border-slate-300 rounded-lg px-2 py-2"
+                    >
+                      <option value="KSRTC Ordinary">KSRTC Ordinary</option>
+                      <option value="Express">Express</option>
+                      <option value="Private Route">Private Route</option>
+                      <option value="College Shuttle">College Shuttle</option>
+                      <option value="Shared Feeder">Shared Feeder</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Operator</label>
+                    <input
+                      type="text"
+                      value={newBusOperator}
+                      onChange={e => setNewBusOperator(e.target.value)}
+                      className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2"
+                    />
+                  </div>
                 </div>
 
                 <div>
@@ -516,7 +632,7 @@ export const AdminDashboard: React.FC = () => {
                   <select
                     value={newBusRouteId}
                     onChange={e => setNewBusRouteId(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 font-semibold"
                   >
                     {routes.map(r => (
                       <option key={r.id} value={r.id}>{r.routeNumber} ({r.routeName})</option>
@@ -531,7 +647,7 @@ export const AdminDashboard: React.FC = () => {
                       type="number"
                       value={newBusCapacity}
                       onChange={e => setNewBusCapacity(Number(e.target.value))}
-                      className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2"
+                      className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 font-bold"
                     />
                   </div>
                   <div>
@@ -540,7 +656,7 @@ export const AdminDashboard: React.FC = () => {
                       type="number"
                       value={newBusSeats}
                       onChange={e => setNewBusSeats(Number(e.target.value))}
-                      className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2"
+                      className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 font-bold text-emerald-600"
                     />
                   </div>
                 </div>
@@ -550,7 +666,7 @@ export const AdminDashboard: React.FC = () => {
                     type="submit"
                     className="flex-1 py-2 bg-brand-blue hover:bg-brand-blue-dark text-white font-bold rounded-xl"
                   >
-                    Save & Deploy
+                    Save & Deploy to Network
                   </button>
                   <button
                     type="button"
