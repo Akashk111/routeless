@@ -34,4 +34,6 @@ pnpm-debug.log*
 # Database files
 *.sqlite
 *.sqlite-journal
-backend/data/*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+backend/data/
