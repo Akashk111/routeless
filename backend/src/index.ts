@@ -144,3 +144,5 @@ busSimulator.start(3500);
 app.listen(PORT, () => {
   console.log(`🚌 ROUTELESS Backend API Server running on http://localhost:${PORT}`);
 });
+
+export default app;

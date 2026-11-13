@@ -11,7 +11,15 @@ import {
   Booking
 } from '../types/index.js';
 
-const API_BASE = (import.meta as any).env?.VITE_API_BASE_URL || '/api';
+const getApiBase = (): string => {
+  const proc = (globalThis as any).process;
+  if (proc?.env?.BACKEND_URL) {
+    return `${proc.env.BACKEND_URL.replace(/\/$/, '')}/api`;
+  }
+  return (import.meta as any).env?.VITE_API_BASE_URL || '/api';
+};
+
+const API_BASE = getApiBase();
 
 export interface PlanJourneyParams {
   origin: string;

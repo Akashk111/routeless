@@ -1,4 +1,4 @@
-import { User, Bus, Route, BusStop, Trip, PassengerRecord, TravelRequest, TransportReport, AppNotification } from '../types/index.js';
+import { User, Bus, Route, BusStop, Trip, PassengerRecord, TravelRequest, TransportReport, AppNotification, BusType } from '../types/index.js';
 
 export const INITIAL_USERS: User[] = [
   {

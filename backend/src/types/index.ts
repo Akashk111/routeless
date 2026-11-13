@@ -14,6 +14,8 @@ export interface User {
   village: string;
   institution?: string;
   avatar?: string;
+  studentId?: string;
+  studentPassActive?: boolean;
   createdAt: string;
 }
 
@@ -56,6 +58,7 @@ export interface Bus {
   driverName?: string;
   driverPhone?: string;
   isSimulatedGps: boolean;
+  imageUrl?: string;
   
   // Real-time calculated fields
   nextStopName: string;
@@ -126,6 +129,7 @@ export interface Trip {
   status: BusStatus;
   operatingDays: string;
   stops: string[];
+  imageUrl?: string;
 }
 
 export interface PassengerRecord {
@@ -247,7 +251,7 @@ export interface AlternativeOption {
   arrivalTime: string;
   durationMin: number;
   fareRupees: number;
-  distanceKm: number;
+  distanceKm?: number;
   walkingDistanceMeters: number;
   walkingDurationMin: number;
   score: number;
