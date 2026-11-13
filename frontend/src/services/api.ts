@@ -16,6 +16,7 @@ export interface PlanJourneyParams {
   origin: string;
   destination: string;
   time?: string;
+  travelDate?: string;
   sort?: string;
   busType?: string;
   maxFare?: number;
@@ -132,6 +133,7 @@ export const api = {
     query.append('origin', params.origin);
     query.append('destination', params.destination);
     if (params.time) query.append('time', params.time);
+    if (params.travelDate) query.append('travelDate', params.travelDate);
     if (params.sort) query.append('sort', params.sort);
     if (params.busType && params.busType !== 'all') query.append('busType', params.busType);
     if (params.maxFare) query.append('maxFare', String(params.maxFare));
@@ -143,6 +145,27 @@ export const api = {
     const res = await fetch(`${API_BASE}/journey/plan?${query.toString()}`);
     const data = await res.json();
     return data.journeys || [];
+  },
+
+  // Stops & Live Telemetry
+  async getStops(query?: string): Promise<any[]> {
+    const url = query ? `${API_BASE}/stops?q=${encodeURIComponent(query)}` : `${API_BASE}/stops`;
+    const res = await fetch(url);
+    const data = await res.json();
+    return data.stops || [];
+  },
+
+  async getTrips(routeId?: string): Promise<any[]> {
+    const url = routeId ? `${API_BASE}/trips?routeId=${encodeURIComponent(routeId)}` : `${API_BASE}/trips`;
+    const res = await fetch(url);
+    const data = await res.json();
+    return data.trips || [];
+  },
+
+  async getBusLocation(busId: string): Promise<any> {
+    const res = await fetch(`${API_BASE}/buses/${busId}/location`);
+    const data = await res.json();
+    return data.location;
   },
 
   // Alternatives

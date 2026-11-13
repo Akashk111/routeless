@@ -46,10 +46,11 @@ router.delete('/routes/:id', (req: Request, res: Response) => {
 });
 
 // PLAN JOURNEYS (Graph Dijkstra Route Optimization & Timetables)
-router.get('/plan', (req: Request, res: Response) => {
-  const origin = (req.query.origin as string) || 'Kinnigoli';
-  const destination = (req.query.destination as string) || 'Moodbidri';
-  const time = (req.query.time as string) || '07:30';
+const handleJourneyPlan = (req: Request, res: Response) => {
+  const origin = (req.query.origin as string) || (req.query.from as string) || 'Kinnigoli';
+  const destination = (req.query.destination as string) || (req.query.to as string) || 'Moodbidri';
+  const time = (req.query.time as string) || (req.query.departureTime as string) || '07:30 AM';
+  const travelDate = (req.query.travelDate as string) || (req.query.date as string) || '13/11/2026';
 
   const sort = req.query.sort as any;
   const busType = req.query.busType as string;
@@ -60,6 +61,7 @@ router.get('/plan', (req: Request, res: Response) => {
   const operator = req.query.operator as string;
 
   const journeys = planJourneys(origin, destination, time, {
+    travelDate,
     sort,
     busType,
     maxFare,
@@ -73,9 +75,13 @@ router.get('/plan', (req: Request, res: Response) => {
     origin,
     destination,
     preferredTime: time,
+    travelDate,
     count: journeys.length,
     journeys
   });
-});
+};
+
+router.get('/plan', handleJourneyPlan);
+router.get('/search', handleJourneyPlan);
 
 export default router;

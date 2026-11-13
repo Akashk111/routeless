@@ -32,6 +32,8 @@ export interface Bus {
   id: string;
   busNumber: string;
   busName: string;
+  registrationNumber?: string;
+  routeNumber?: string;
   busType: BusType;
   operator: string;
   routeId: string;
@@ -40,6 +42,7 @@ export interface Bus {
   destination: string;
   stops: string[];
   capacity: number;
+  occupiedSeats?: number;
   availableSeats: number;
   status: BusStatus;
   currentLat: number;
@@ -97,6 +100,7 @@ export interface JourneyLeg {
   routeName: string;
   busId: string;
   busNumber: string;
+  registrationNumber?: string;
   busType: BusType;
   busStatus: string;
   operator: string;
@@ -108,6 +112,7 @@ export interface JourneyLeg {
   distanceKm: number;
   fareRupees: number;
   availableSeats: number;
+  occupiedSeats?: number;
   capacity: number;
   intermediateStops: string[];
 }
@@ -129,9 +134,13 @@ export interface OptimizedJourney {
   statusSummary: 'Optimal' | 'Delayed' | 'Full Capacity' | 'Cancelled';
   advisoryNote?: string;
   availableSeats: number;
+  occupiedSeats?: number;
+  totalSeats?: number;
   minAvailableSeatsInLegs: number;
   primaryBusType: BusType;
   primaryOperator: string;
+  primaryBusNumber?: string;
+  primaryRegistrationNumber?: string;
 }
 
 export interface TravelRequest {

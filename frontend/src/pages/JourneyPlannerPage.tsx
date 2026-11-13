@@ -65,7 +65,7 @@ export const JourneyPlannerPage: React.FC = () => {
 
   // Search Inputs
   const [origin, setOrigin] = useState(searchParams.get('origin') || 'Kinnigoli');
-  const [destination, setDestination] = useState(searchParams.get('destination') || 'Moodbidri');
+  const [destination, setDestination] = useState(searchParams.get('destination') || "Moodbidri (Alva's College)");
   const [preferredTime, setPreferredTime] = useState(searchParams.get('time') || '07:30');
   const [travelDate, setTravelDate] = useState('2026-11-13');
   const [passengers, setPassengers] = useState(1);
@@ -99,6 +99,7 @@ export const JourneyPlannerPage: React.FC = () => {
         origin,
         destination,
         time: preferredTime,
+        travelDate,
         sort: sortBy,
         busType: busTypeFilter !== 'all' ? busTypeFilter : undefined,
         maxFare: maxFare ? Number(maxFare) : undefined,
@@ -181,7 +182,7 @@ export const JourneyPlannerPage: React.FC = () => {
                 className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-xs font-semibold text-navy-900 focus:outline-none focus:ring-2 focus:ring-brand-blue"
               >
                 {DESTINATION_OPTIONS.map(d => (
-                  <option key={d} value={d.split(' ')[0]}>{d}</option>
+                  <option key={d} value={d}>{d}</option>
                 ))}
               </select>
             </div>
@@ -408,12 +409,18 @@ export const JourneyPlannerPage: React.FC = () => {
                 >
                   {/* Top Bar */}
                   <div className="bg-slate-50/90 px-5 py-3 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3 text-xs">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${getBusTypeBadge(journey.primaryBusType)}`}>
                         {journey.primaryBusType}
                       </span>
                       <span className="font-extrabold text-navy-900 text-sm">
-                        {journey.legs.map(l => `${l.routeNumber} (${l.busNumber})`).join(' ➔ ')}
+                        Route {journey.legs.map(l => l.routeNumber).join(' ➔ ')}
+                      </span>
+                      <span className="px-2 py-0.5 bg-slate-100 rounded text-slate-700 font-mono text-[11px] font-bold border border-slate-200">
+                        Bus {journey.legs.map(l => l.busNumber).join(' ➔ ')}
+                      </span>
+                      <span className="px-2 py-0.5 bg-amber-50 rounded text-amber-800 font-mono text-[11px] font-bold border border-amber-200">
+                        Reg: {journey.legs.map(l => l.registrationNumber || journey.primaryRegistrationNumber || 'KA-19-F-1401').join(' ➔ ')}
                       </span>
                       <StatusBadge status={journey.statusSummary} size="sm" />
                     </div>
@@ -468,15 +475,18 @@ export const JourneyPlannerPage: React.FC = () => {
 
                       {/* Available Seats with visual capacity bar */}
                       <div>
-                        <span className="text-slate-400 block text-[10px] uppercase font-bold">Available Seats</span>
+                        <span className="text-slate-400 block text-[10px] uppercase font-bold">Seats & Capacity</span>
                         <div className={`text-sm font-black ${journey.availableSeats > 5 ? 'text-emerald-600' : journey.availableSeats > 0 ? 'text-amber-600' : 'text-rose-600'}`}>
-                          {journey.availableSeats > 0 ? `${journey.availableSeats} seats free` : 'FULL (0 seats)'}
+                          {journey.availableSeats > 0 ? `${journey.availableSeats} available` : 'FULL (0 seats)'}
+                        </div>
+                        <div className="text-[10px] text-slate-500 font-medium">
+                          {journey.occupiedSeats ?? (52 - journey.availableSeats)} occupied / {journey.totalSeats || 52} total
                         </div>
                         {/* Progress Bar */}
-                        <div className="w-full bg-slate-100 rounded-full h-2 mt-1 overflow-hidden">
+                        <div className="w-full bg-slate-100 rounded-full h-1.5 mt-1 overflow-hidden">
                           <div
                             className={`h-full rounded-full ${journey.availableSeats > 10 ? 'bg-emerald-500' : journey.availableSeats > 0 ? 'bg-amber-500' : 'bg-rose-500'}`}
-                            style={{ width: `${Math.min(100, (journey.availableSeats / 50) * 100)}%` }}
+                            style={{ width: `${Math.min(100, (journey.availableSeats / (journey.totalSeats || 50)) * 100)}%` }}
                           />
                         </div>
                       </div>
@@ -542,19 +552,20 @@ export const JourneyPlannerPage: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => toggleStops(journey.id)}
-                        className="text-slate-500 hover:text-navy-900 font-semibold flex items-center gap-1 transition"
+                        className="px-3.5 py-1.5 rounded-xl border border-brand-blue/30 bg-blue-50/60 hover:bg-blue-100/80 text-brand-blue font-bold flex items-center gap-1.5 transition text-xs shadow-2xs"
                       >
-                        <span>{isStopsExpanded ? 'Hide Intermediate Stops' : 'View Intermediate Stops'}</span>
+                        <Compass className="w-3.5 h-3.5 text-brand-blue" />
+                        <span>{isStopsExpanded ? 'Hide Complete Route' : 'View Complete Route'}</span>
                         {isStopsExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
                       </button>
 
                       <div className="flex items-center gap-2">
                         <Link
-                          to={`/tracking?bus=${journey.legs[0].busId}`}
+                          to={`/tracking?route=${journey.legs[0].routeId}&bus=${journey.legs[0].busId}`}
                           className="px-3.5 py-1.5 rounded-xl border border-slate-300 hover:bg-slate-100 text-slate-700 font-semibold transition flex items-center gap-1.5"
                         >
                           <Radio className="w-3.5 h-3.5 text-emerald-600" />
-                          <span>Track Bus on Map</span>
+                          <span>Track Live GPS</span>
                         </Link>
 
                         <Link

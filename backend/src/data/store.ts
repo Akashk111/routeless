@@ -1,10 +1,23 @@
-import { User, Bus, Route, TravelRequest, TransportReport, AppNotification } from '../types/index.js';
-import { INITIAL_USERS, INITIAL_BUSES, INITIAL_ROUTES, INITIAL_REQUESTS, INITIAL_REPORTS, INITIAL_NOTIFICATIONS } from './initialData.js';
+import { User, Bus, Route, TravelRequest, TransportReport, AppNotification, BusStop, Trip, PassengerRecord } from '../types/index.js';
+import {
+  INITIAL_USERS,
+  INITIAL_BUSES,
+  INITIAL_ROUTES,
+  INITIAL_REQUESTS,
+  INITIAL_REPORTS,
+  INITIAL_NOTIFICATIONS,
+  ALL_BUS_STOPS,
+  INITIAL_TRIPS,
+  INITIAL_PASSENGERS
+} from './initialData.js';
 
 class DataStore {
   users: User[] = [];
   buses: Bus[] = [];
   routes: Route[] = [];
+  stops: BusStop[] = [];
+  trips: Trip[] = [];
+  passengers: PassengerRecord[] = [];
   requests: TravelRequest[] = [];
   reports: TransportReport[] = [];
   notifications: AppNotification[] = [];
@@ -17,14 +30,62 @@ class DataStore {
     this.users = JSON.parse(JSON.stringify(INITIAL_USERS));
     this.buses = JSON.parse(JSON.stringify(INITIAL_BUSES));
     this.routes = JSON.parse(JSON.stringify(INITIAL_ROUTES));
+    this.stops = JSON.parse(JSON.stringify(ALL_BUS_STOPS));
+    this.trips = JSON.parse(JSON.stringify(INITIAL_TRIPS));
+    this.passengers = JSON.parse(JSON.stringify(INITIAL_PASSENGERS));
     this.requests = JSON.parse(JSON.stringify(INITIAL_REQUESTS));
     this.reports = JSON.parse(JSON.stringify(INITIAL_REPORTS));
     this.notifications = JSON.parse(JSON.stringify(INITIAL_NOTIFICATIONS));
   }
 
+  // Stops
+  getStops() { return this.stops; }
+  getStopById(id: string) { return this.stops.find(s => s.id === id); }
+
+  // Trips
+  getTrips(routeId?: string) {
+    if (routeId && routeId !== 'all') {
+      return this.trips.filter(t => t.routeId === routeId);
+    }
+    return this.trips;
+  }
+  getTripById(id: string) { return this.trips.find(t => t.id === id); }
+
+  // Passengers
+  getPassengers(tripId?: string) {
+    if (tripId && tripId !== 'all') {
+      return this.passengers.filter(p => p.tripId === tripId);
+    }
+    return this.passengers;
+  }
+
   // Buses
   getBuses() { return this.buses; }
   getBusById(id: string) { return this.buses.find(b => b.id === id); }
+  getBusLocation(id: string) {
+    const bus = this.buses.find(b => b.id === id || b.busNumber === id || b.registrationNumber === id);
+    if (!bus) return null;
+    return {
+      busId: bus.id,
+      busNumber: bus.busNumber,
+      registrationNumber: bus.registrationNumber,
+      routeName: bus.routeName,
+      routeNumber: bus.routeNumber,
+      latitude: bus.currentLat,
+      longitude: bus.currentLng,
+      speedKmH: bus.speedKmH,
+      heading: bus.heading,
+      status: bus.status,
+      nextStop: bus.nextStopName,
+      distanceToNextStopKm: bus.distanceToNextStopKm,
+      remainingDistanceKm: bus.remainingDistanceKm,
+      etaNextStop: bus.etaNextStop,
+      etaDestination: bus.etaDestination,
+      lastUpdated: bus.lastUpdated,
+      isSimulatedGps: bus.isSimulatedGps ?? true,
+      label: bus.isSimulatedGps ? 'DEMO GPS SIMULATOR' : 'HARDWARE GPS'
+    };
+  }
   updateBus(id: string, updates: Partial<Bus>) {
     const idx = this.buses.findIndex(b => b.id === id);
     if (idx !== -1) {

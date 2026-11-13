@@ -25,21 +25,25 @@ export interface BusStop {
   sequence: number;
   distanceFromStartKm: number;
   villageTag?: string;
+  aliases?: string[];
   isHub?: boolean;
 }
 
 export interface Bus {
   id: string;
   busNumber: string;
+  registrationNumber: string;
   busName: string;
   busType: BusType;
   operator: string;
   routeId: string;
+  routeNumber: string;
   routeName: string;
   origin: string;
   destination: string;
   stops: string[];
   capacity: number;
+  occupiedSeats: number;
   availableSeats: number;
   status: BusStatus;
   currentLat: number;
@@ -65,6 +69,21 @@ export interface Bus {
   totalDistanceKm: number;
 }
 
+export interface TripSchedule {
+  tripId: string;
+  departureTime: string;
+  arrivalTime: string;
+  busId: string;
+  busNumber: string;
+  registrationNumber: string;
+  busType: BusType;
+  operator: string;
+  fareRupees: number;
+  capacity: number;
+  occupiedSeats: number;
+  availableSeats: number;
+}
+
 export interface Route {
   id: string;
   routeNumber: string;
@@ -80,15 +99,47 @@ export interface Route {
   busType: BusType;
   stops: BusStop[];
   associatedBusIds: string[];
-  schedule: {
-    departureTime: string;
-    arrivalTime: string;
-    busId: string;
-    busNumber: string;
-    busType: BusType;
-    operator: string;
-    fareRupees: number;
-  }[];
+  schedule: TripSchedule[];
+}
+
+export interface Trip {
+  id: string;
+  tripNumber: string;
+  routeId: string;
+  routeNumber: string;
+  routeName: string;
+  busId: string;
+  busNumber: string;
+  registrationNumber: string;
+  operator: string;
+  busType: BusType;
+  origin: string;
+  destination: string;
+  departureTime: string;
+  arrivalTime: string;
+  durationMin: number;
+  totalDistanceKm: number;
+  fareRupees: number;
+  capacity: number;
+  occupiedSeats: number;
+  availableSeats: number;
+  status: BusStatus;
+  operatingDays: string;
+  stops: string[];
+}
+
+export interface PassengerRecord {
+  id: string;
+  tripId: string;
+  busNumber: string;
+  studentId: string;
+  studentName: string;
+  seatNumber: number;
+  boardingStop: string;
+  destinationStop: string;
+  farePaid: number;
+  bookingDate: string;
+  status: 'CONFIRMED' | 'BOARDED' | 'CANCELLED';
 }
 
 export interface JourneyLeg {
@@ -97,6 +148,7 @@ export interface JourneyLeg {
   routeName: string;
   busId: string;
   busNumber: string;
+  registrationNumber: string;
   busType: BusType;
   busStatus: string;
   operator: string;
@@ -108,6 +160,7 @@ export interface JourneyLeg {
   distanceKm: number;
   fareRupees: number;
   availableSeats: number;
+  occupiedSeats: number;
   capacity: number;
   intermediateStops: string[];
 }
@@ -129,9 +182,13 @@ export interface OptimizedJourney {
   statusSummary: 'Optimal' | 'Delayed' | 'Full Capacity' | 'Cancelled';
   advisoryNote?: string;
   availableSeats: number;
+  occupiedSeats: number;
+  totalSeats: number;
   minAvailableSeatsInLegs: number;
   primaryBusType: BusType;
   primaryOperator: string;
+  primaryBusNumber: string;
+  primaryRegistrationNumber: string;
 }
 
 export interface TravelRequest {

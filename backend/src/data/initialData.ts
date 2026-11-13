@@ -1,4 +1,4 @@
-import { User, Bus, Route, TravelRequest, TransportReport, AppNotification } from '../types/index.js';
+import { User, Bus, Route, BusStop, Trip, PassengerRecord, TravelRequest, TransportReport, AppNotification } from '../types/index.js';
 
 export const INITIAL_USERS: User[] = [
   {
@@ -39,8 +39,111 @@ export const INITIAL_USERS: User[] = [
   }
 ];
 
+// ==========================================
+// 56 BUS STOPS (Accurate Mangaluru / Coastal Karnataka coordinates)
+// ==========================================
+export const ALL_BUS_STOPS: BusStop[] = [
+  { id: 's-kin-1', name: 'Kinnigoli Bus Stand', latitude: 13.0854, longitude: 74.8722, sequence: 1, distanceFromStartKm: 0, villageTag: 'Kinnigoli', aliases: ['Kinnigoli', 'Kinnigoli Stand', 'Kinnigoli Main'], isHub: true },
+  { id: 's-kin-ch', name: 'Kinnigoli Church Junction', latitude: 13.0810, longitude: 74.8650, sequence: 2, distanceFromStartKm: 1.2, villageTag: 'Kinnigoli', aliases: ['Kinnigoli Church', 'Church Cross'] },
+  { id: 's-kat-1', name: 'Kateel Temple Junction', latitude: 13.0673, longitude: 74.8488, sequence: 3, distanceFromStartKm: 4.8, villageTag: 'Kateel', aliases: ['Kateel', 'Kateel Temple', 'Kateel Cross', 'Kateel Durgaparameshwari'], isHub: true },
+  { id: 's-kat-col', name: 'Kateel First Grade College', latitude: 13.0620, longitude: 74.8510, sequence: 4, distanceFromStartKm: 5.6, villageTag: 'Kateel', aliases: ['Kateel College', 'Kateel PU College'] },
+  { id: 's-per-1', name: 'Permude Grama Stop', latitude: 13.0450, longitude: 74.8580, sequence: 5, distanceFromStartKm: 8.2, villageTag: 'Permude', aliases: ['Permude', 'Permude Cross'] },
+  { id: 's-yek-1', name: 'Yekkar Grama Panchayat', latitude: 13.0310, longitude: 74.8640, sequence: 6, distanceFromStartKm: 10.4, villageTag: 'Yekkar', aliases: ['Yekkar', 'Yekkar Panchayat'] },
+  { id: 's-baj-cr', name: 'Bajpe Rural Cross', latitude: 13.0125, longitude: 74.8790, sequence: 7, distanceFromStartKm: 13.2, villageTag: 'Bajpe', aliases: ['Bajpe Cross', 'Bajpe Road Cross'] },
+  { id: 's-baj-hub', name: 'Bajpe Bus Station', latitude: 12.9818, longitude: 74.8872, sequence: 8, distanceFromStartKm: 17.5, villageTag: 'Bajpe', aliases: ['Bajpe', 'Bajpe Station', 'Bajpe Airport Hub'], isHub: true },
+  { id: 's-gan-1', name: 'Ganjimutt Tech Zone', latitude: 13.0298, longitude: 74.9450, sequence: 9, distanceFromStartKm: 21.0, villageTag: 'Ganjimutt', aliases: ['Ganjimutt', 'Ganjimutt Cross', 'Ganjimutt Industrial'] },
+  { id: 's-poj-1', name: 'Pojekallu Cross', latitude: 13.0150, longitude: 74.9250, sequence: 10, distanceFromStartKm: 24.2, villageTag: 'Pojekallu', aliases: ['Pojekallu'] },
+  { id: 's-mij-1', name: 'Mijar (Alvas Engineering Campus)', latitude: 13.0480, longitude: 74.9650, sequence: 11, distanceFromStartKm: 28.5, villageTag: 'Mijar', aliases: ['Mijar', 'Alvas Engineering', 'AIET Mijar', 'Shobhavana'], isHub: true },
+  { id: 's-alv-1', name: "Alva's Vidyagiri Campus Gate", latitude: 13.0650, longitude: 74.9890, sequence: 12, distanceFromStartKm: 33.2, villageTag: 'Moodbidri', aliases: ['Alva\'s College', 'Alvas College', 'Alvas Vidyagiri', "Alva's", 'Vidyagiri Gate', 'Moodbidri (Alva\'s College)'], isHub: true },
+  { id: 's-alv-eng', name: "Alva's Engineering & Medical Block", latitude: 13.0550, longitude: 74.9780, sequence: 13, distanceFromStartKm: 34.5, villageTag: 'Moodbidri', aliases: ['Alvas Campus', 'Alvas Medical Block'] },
+  { id: 's-mbd-1', name: 'Moodbidri Bus Terminus', latitude: 13.0722, longitude: 74.9961, sequence: 14, distanceFromStartKm: 36.0, villageTag: 'Moodbidri', aliases: ['Moodbidri', 'Moodbidri Stand', 'Moodabidri', 'Moodbidri Bus Stand'], isHub: true },
+  { id: 's-mbd-mah', name: 'Moodbidri Mahaveer College', latitude: 13.0780, longitude: 74.9990, sequence: 15, distanceFromStartKm: 37.2, villageTag: 'Moodbidri', aliases: ['Mahaveer College', 'Jain Petha'] },
+  { id: 's-mng-sb', name: 'Mangaluru State Bank Terminus', latitude: 12.8624, longitude: 74.8398, sequence: 16, distanceFromStartKm: 0, villageTag: 'Mangaluru', aliases: ['Mangaluru', 'State Bank', 'Mangalore State Bank', 'Mangalore'], isHub: true },
+  { id: 's-mng-ham', name: 'Mangaluru Hampankatta Circle', latitude: 12.8685, longitude: 74.8430, sequence: 17, distanceFromStartKm: 1.5, villageTag: 'Mangaluru', aliases: ['Hampankatta', 'Light House Hill'] },
+  { id: 's-mng-bj', name: 'Mangaluru KSRTC Bejai Terminal', latitude: 12.8850, longitude: 74.8480, sequence: 18, distanceFromStartKm: 4.2, villageTag: 'Mangaluru', aliases: ['Bejai', 'KSRTC Bejai', 'Mangaluru KSRTC'], isHub: true },
+  { id: 's-mng-kul', name: 'Kulashekara Church Stop', latitude: 12.8910, longitude: 74.8780, sequence: 19, distanceFromStartKm: 7.8, villageTag: 'Kulashekara', aliases: ['Kulashekara', 'Kulashekar'] },
+  { id: 's-mng-vam', name: 'Vamanjoor (St. Joseph Engg Gate)', latitude: 12.9197, longitude: 74.8967, sequence: 20, distanceFromStartKm: 11.5, villageTag: 'Vamanjoor', aliases: ['Vamanjoor', 'SJEC', 'St. Joseph Engineering College', 'St Joseph Engg', 'Vamanjoor (St. Joseph Engg)'], isHub: true },
+  { id: 's-pil-1', name: 'Pilikula Heritage Gate', latitude: 12.9260, longitude: 74.9080, sequence: 21, distanceFromStartKm: 13.2, villageTag: 'Pilikula', aliases: ['Pilikula', 'Nisargadhama'] },
+  { id: 's-pol-1', name: 'Polali Dwara Stop', latitude: 12.9350, longitude: 74.9210, sequence: 22, distanceFromStartKm: 15.5, villageTag: 'Polali', aliases: ['Polali', 'Polali Temple Dwara', 'Polali Cross'] },
+  { id: 's-mng-gur', name: 'Gurupura Kaikamba Junction', latitude: 12.9463, longitude: 74.9351, sequence: 23, distanceFromStartKm: 18.0, villageTag: 'Gurupura', aliases: ['Gurupura', 'Kaikamba', 'Gurupura Kaikamba'], isHub: true },
+  { id: 's-pan-1', name: 'Panambur New Port Gate', latitude: 12.9510, longitude: 74.8110, sequence: 24, distanceFromStartKm: 11.0, villageTag: 'Panambur', aliases: ['Panambur', 'Port Gate', 'Panambur Beach'] },
+  { id: 's-sur-1', name: 'NITK Surathkal Main Gate', latitude: 13.0076, longitude: 74.7946, sequence: 25, distanceFromStartKm: 18.5, villageTag: 'Surathkal', aliases: ['Surathkal', 'NITK', 'NITK Surathkal', 'Surathkal (NITK Campus)', 'NITK Campus'], isHub: true },
+  { id: 's-muk-1', name: 'Mukka Srinivas Hospital Gate', latitude: 13.0280, longitude: 74.7950, sequence: 26, distanceFromStartKm: 22.0, villageTag: 'Mukka', aliases: ['Mukka', 'Srinivas Hospital', 'Srinivas College'] },
+  { id: 's-hal-1', name: 'Haleyangadi Grama Cross', latitude: 13.0580, longitude: 74.7940, sequence: 27, distanceFromStartKm: 26.2, villageTag: 'Haleyangadi', aliases: ['Haleyangadi', 'Haleyangadi Cross'] },
+  { id: 's-mul-1', name: 'Mulki Town Bus Stand', latitude: 13.0906, longitude: 74.7937, sequence: 28, distanceFromStartKm: 30.5, villageTag: 'Mulki', aliases: ['Mulki', 'Mulki Stand', 'Mulki Town'], isHub: true },
+  { id: 's-bap-1', name: 'Bappanadu Temple Stop', latitude: 13.0940, longitude: 74.8120, sequence: 29, distanceFromStartKm: 32.5, villageTag: 'Mulki', aliases: ['Bappanadu', 'Bappanadu Temple'] },
+  { id: 's-pdm-1', name: 'Padubidri Junction', latitude: 13.1420, longitude: 74.7860, sequence: 30, distanceFromStartKm: 38.0, villageTag: 'Padubidri', aliases: ['Padubidri', 'Padubidre'], isHub: true },
+  { id: 's-kau-1', name: 'Kaup Lighthouse Cross', latitude: 13.2240, longitude: 74.7480, sequence: 31, distanceFromStartKm: 47.5, villageTag: 'Kaup', aliases: ['Kaup', 'Kapu'] },
+  { id: 's-kat-p', name: 'Katapadi Junction', latitude: 13.2820, longitude: 74.7450, sequence: 32, distanceFromStartKm: 53.0, villageTag: 'Katapadi', aliases: ['Katapadi'] },
+  { id: 's-udp-sb', name: 'Udupi Service Bus Stand', latitude: 13.3409, longitude: 74.7421, sequence: 33, distanceFromStartKm: 59.0, villageTag: 'Udupi', aliases: ['Udupi', 'Udupi Stand', 'Udupi Service Stand', 'Udupi Service Bus Stand'], isHub: true },
+  { id: 's-udp-ct', name: 'Udupi City Bus Stand', latitude: 13.3440, longitude: 74.7460, sequence: 34, distanceFromStartKm: 60.0, villageTag: 'Udupi', aliases: ['Udupi City', 'City Stand Udupi'] },
+  { id: 's-mnp-tc', name: 'Manipal Tiger Circle (MAHE)', latitude: 13.3525, longitude: 74.7865, sequence: 35, distanceFromStartKm: 65.0, villageTag: 'Manipal', aliases: ['Manipal', 'Tiger Circle', 'MAHE Manipal'], isHub: true },
+  { id: 's-mnp-hs', name: 'Manipal Hospital Cross', latitude: 13.3580, longitude: 74.7910, sequence: 36, distanceFromStartKm: 66.2, villageTag: 'Manipal', aliases: ['KMC Manipal', 'Manipal Hospital'] },
+  { id: 's-hir-1', name: 'Hiriadka Bus Stand', latitude: 13.3360, longitude: 74.8720, sequence: 37, distanceFromStartKm: 75.0, villageTag: 'Hiriadka', aliases: ['Hiriadka', 'Hiriadka Cross'] },
+  { id: 's-bel-1', name: 'Belman Rural Junction', latitude: 13.2510, longitude: 74.9210, sequence: 38, distanceFromStartKm: 86.0, villageTag: 'Belman', aliases: ['Belman', 'Belmannu'], isHub: true },
+  { id: 's-krk-1', name: 'Karkala Bus Stand (Bandimath)', latitude: 13.2130, longitude: 74.9980, sequence: 39, distanceFromStartKm: 96.0, villageTag: 'Karkala', aliases: ['Karkala', 'Bandimath', 'Karkala Bus Stand'], isHub: true },
+  { id: 's-krk-gom', name: 'Karkala Gommateshwara Hill', latitude: 13.2180, longitude: 75.0020, sequence: 40, distanceFromStartKm: 97.5, villageTag: 'Karkala', aliases: ['Karkala Hill', 'Bahubali Karkala'] },
+  { id: 's-miy-1', name: 'Miyar Village Cross', latitude: 13.1650, longitude: 74.9970, sequence: 41, distanceFromStartKm: 102.5, villageTag: 'Miyar', aliases: ['Miyar'] },
+  { id: 's-ven-1', name: 'Venur Gommateshwara Circle', latitude: 13.0480, longitude: 75.1450, sequence: 42, distanceFromStartKm: 118.0, villageTag: 'Venur', aliases: ['Venur', 'Venoor'], isHub: true },
+  { id: 's-grv-1', name: 'Guruvayanakere Cross', latitude: 13.0210, longitude: 75.2280, sequence: 43, distanceFromStartKm: 128.0, villageTag: 'Guruvayanakere', aliases: ['Guruvayanakere'] },
+  { id: 's-blt-1', name: 'Belthangady Bus Stand', latitude: 13.0030, longitude: 75.2580, sequence: 44, distanceFromStartKm: 134.0, villageTag: 'Belthangady', aliases: ['Belthangady', 'Beltangadi', 'Belthangady Stand', 'Belthangady Bus Stand'], isHub: true },
+  { id: 's-ujr-1', name: 'Ujire (SDM College Campus)', latitude: 13.0180, longitude: 75.3210, sequence: 45, distanceFromStartKm: 142.0, villageTag: 'Ujire', aliases: ['Ujire', 'SDM College', 'SDM Ujire'], isHub: true },
+  { id: 's-dhr-1', name: 'Dharmasthala Temple Gate', latitude: 12.9580, longitude: 75.3810, sequence: 46, distanceFromStartKm: 151.0, villageTag: 'Dharmasthala', aliases: ['Dharmasthala', 'Dharmastala'], isHub: true },
+  { id: 's-btw-bc', name: 'Bantwal BC Road Bus Stand', latitude: 12.8931, longitude: 75.0352, sequence: 47, distanceFromStartKm: 0, villageTag: 'Bantwal', aliases: ['Bantwal', 'BC Road', 'Bantwal BC Road', 'BC Road Stand'], isHub: true },
+  { id: 's-btw-bp', name: 'Bantwal Bypass Cross', latitude: 12.8880, longitude: 75.0450, sequence: 48, distanceFromStartKm: 2.2, villageTag: 'Bantwal', aliases: ['Bantwal Bypass'] },
+  { id: 's-can-1', name: 'Benjanapadavu Canara Engg Gate', latitude: 12.8990, longitude: 74.9810, sequence: 49, distanceFromStartKm: 7.5, villageTag: 'Benjanapadavu', aliases: ['Canara Engg', 'Canara Engineering', 'Benjanapadavu', 'Bantwal (Canara Engg)'], isHub: true },
+  { id: 's-far-1', name: 'Farangipete Rural Stop', latitude: 12.8780, longitude: 74.9350, sequence: 50, distanceFromStartKm: 13.5, villageTag: 'Farangipete', aliases: ['Farangipete', 'Farangipet'] },
+  { id: 's-pad-1', name: 'Padil Junction', latitude: 12.8690, longitude: 74.8850, sequence: 51, distanceFromStartKm: 19.0, villageTag: 'Padil', aliases: ['Padil'] },
+  { id: 's-mni-1', name: 'Mani Junction (Mysuru Highway)', latitude: 12.8610, longitude: 75.1250, sequence: 52, distanceFromStartKm: 31.0, villageTag: 'Mani', aliases: ['Mani', 'Mani Cross'], isHub: true },
+  { id: 's-ptr-dr', name: 'Puttur Darbe Circle', latitude: 12.7680, longitude: 75.1980, sequence: 53, distanceFromStartKm: 44.0, villageTag: 'Puttur', aliases: ['Darbe', 'Puttur Darbe'] },
+  { id: 's-ptr-bs', name: 'Puttur KSRTC Bus Stand', latitude: 12.7635, longitude: 75.2038, sequence: 54, distanceFromStartKm: 47.0, villageTag: 'Puttur', aliases: ['Puttur', 'Puttur KSRTC', 'Puttur Stand', 'Puttur KSRTC Stand'], isHub: true },
+  { id: 's-kav-1', name: 'Kavu Grama Cross', latitude: 12.8020, longitude: 75.2410, sequence: 55, distanceFromStartKm: 54.0, villageTag: 'Kavu', aliases: ['Kavu'] },
+  { id: 's-upp-1', name: 'Uppinangady Sangam Bus Stand', latitude: 12.8350, longitude: 75.2890, sequence: 56, distanceFromStartKm: 65.0, villageTag: 'Uppinangady', aliases: ['Uppinangady', 'Uppinangady Sangam', 'Uppinangadi'], isHub: true }
+];
+
+// Helper to look up stop by ID
+const getStop = (id: string): BusStop => ALL_BUS_STOPS.find(s => s.id === id) || ALL_BUS_STOPS[0];
+
+// ==========================================
+// 20 INTERCONNECTED ROUTES
+// ==========================================
 export const INITIAL_ROUTES: Route[] = [
-  // 1. Mangaluru State Bank to Moodbidri Terminus
+  // 1. Kinnigoli ➔ Kateel ➔ Bajpe ➔ Moodbidri ➔ Alva's College (CRUCIAL STUDENT ROUTE)
+  {
+    id: 'route-14b',
+    routeNumber: '14B',
+    routeName: "Kinnigoli ↔ Kateel ↔ Bajpe ↔ Moodbidri (Alva's College)",
+    origin: 'Kinnigoli',
+    destination: "Moodbidri (Alva's College)",
+    via: ['Kateel Temple', 'Bajpe Rural Cross', 'Ganjimutt', "Alva's Vidyagiri Gate"],
+    distanceKm: 28.5,
+    estimatedDurationMin: 55,
+    fareRupees: 35,
+    status: 'Active',
+    operatingDays: 'Daily',
+    busType: 'KSRTC Ordinary',
+    associatedBusIds: ['bus-ka19-1401', 'bus-ka19-1402', 'bus-ka19-1403', 'bus-ka19-1404'],
+    stops: [
+      { ...getStop('s-kin-1'), sequence: 1, distanceFromStartKm: 0 },
+      { ...getStop('s-kat-1'), sequence: 2, distanceFromStartKm: 4.8 },
+      { ...getStop('s-baj-cr'), sequence: 3, distanceFromStartKm: 12.6 },
+      { ...getStop('s-gan-1'), sequence: 4, distanceFromStartKm: 19.4 },
+      { ...getStop('s-alv-1'), sequence: 5, distanceFromStartKm: 26.5 },
+      { ...getStop('s-mbd-1'), sequence: 6, distanceFromStartKm: 28.5 }
+    ],
+    schedule: [
+      { tripId: 'trip-14b-01', departureTime: '06:30', arrivalTime: '07:25', busId: 'bus-ka19-1403', busNumber: 'KA-19-F-1403', registrationNumber: 'KA-19-F-1403', busType: 'KSRTC Ordinary', operator: 'KSRTC Rural Gramina Sarige', fareRupees: 35, capacity: 52, occupiedSeats: 28, availableSeats: 24 },
+      { tripId: 'trip-14b-02', departureTime: '07:00', arrivalTime: '07:55', busId: 'bus-ka19-1404', busNumber: 'KA-19-F-1404', registrationNumber: 'KA-19-F-1404', busType: 'KSRTC Ordinary', operator: 'KSRTC Rural Gramina Sarige', fareRupees: 35, capacity: 52, occupiedSeats: 34, availableSeats: 18 },
+      { tripId: 'trip-14b-03', departureTime: '07:30', arrivalTime: '08:25', busId: 'bus-ka19-1401', busNumber: 'KA-19-F-1401', registrationNumber: 'KA-19-F-1401', busType: 'KSRTC Ordinary', operator: 'KSRTC Rural Gramina Sarige', fareRupees: 35, capacity: 52, occupiedSeats: 38, availableSeats: 14 },
+      { tripId: 'trip-14b-04', departureTime: '08:00', arrivalTime: '08:55', busId: 'bus-ka19-1402', busNumber: 'KA-19-F-1402', registrationNumber: 'KA-19-F-1402', busType: 'KSRTC Ordinary', operator: 'KSRTC Rural Gramina Sarige', fareRupees: 35, capacity: 52, occupiedSeats: 52, availableSeats: 0 },
+      { tripId: 'trip-14b-05', departureTime: '08:30', arrivalTime: '09:25', busId: 'bus-ka19-1403', busNumber: 'KA-19-F-1403', registrationNumber: 'KA-19-F-1403', busType: 'KSRTC Ordinary', operator: 'KSRTC Rural Gramina Sarige', fareRupees: 35, capacity: 52, occupiedSeats: 22, availableSeats: 30 },
+      { tripId: 'trip-14b-06', departureTime: '09:00', arrivalTime: '09:55', busId: 'bus-ka19-1404', busNumber: 'KA-19-F-1404', registrationNumber: 'KA-19-F-1404', busType: 'KSRTC Ordinary', operator: 'KSRTC Rural Gramina Sarige', fareRupees: 35, capacity: 52, occupiedSeats: 18, availableSeats: 34 },
+      { tripId: 'trip-14b-07', departureTime: '13:30', arrivalTime: '14:25', busId: 'bus-ka19-1401', busNumber: 'KA-19-F-1401', registrationNumber: 'KA-19-F-1401', busType: 'KSRTC Ordinary', operator: 'KSRTC Rural Gramina Sarige', fareRupees: 35, capacity: 52, occupiedSeats: 30, availableSeats: 22 },
+      { tripId: 'trip-14b-08', departureTime: '16:45', arrivalTime: '17:40', busId: 'bus-ka19-1402', busNumber: 'KA-19-F-1402', registrationNumber: 'KA-19-F-1402', busType: 'KSRTC Ordinary', operator: 'KSRTC Rural Gramina Sarige', fareRupees: 35, capacity: 52, occupiedSeats: 48, availableSeats: 4 }
+    ]
+  },
+
+  // 2. Mangaluru State Bank to Moodbidri
   {
     id: 'route-31m',
     routeNumber: '31M',
@@ -56,50 +159,19 @@ export const INITIAL_ROUTES: Route[] = [
     busType: 'KSRTC Ordinary',
     associatedBusIds: ['bus-ka19-3101', 'bus-ka19-3102'],
     stops: [
-      { id: 's-mng-sb', name: 'Mangaluru State Bank Terminus', latitude: 12.8624, longitude: 74.8398, sequence: 1, distanceFromStartKm: 0, isHub: true },
-      { id: 's-mng-kul', name: 'Kulashekara Church Stop', latitude: 12.8910, longitude: 74.8780, sequence: 2, distanceFromStartKm: 5.6 },
-      { id: 's-mng-vam', name: 'Vamanjoor (St. Joseph Engg Gate)', latitude: 12.9197, longitude: 74.8967, sequence: 3, distanceFromStartKm: 10.4, isHub: true },
-      { id: 's-mng-gur', name: 'Gurupura Kaikamba Junction', latitude: 12.9463, longitude: 74.9351, sequence: 4, distanceFromStartKm: 16.8, isHub: true },
-      { id: 's-mng-gan', name: 'Ganjimutt Tech Zone', latitude: 13.0298, longitude: 74.9450, sequence: 5, distanceFromStartKm: 23.5 },
-      { id: 's-mng-mij', name: 'Mijar (Alvas Engg Campus)', latitude: 13.0480, longitude: 74.9650, sequence: 6, distanceFromStartKm: 29.2, isHub: true },
-      { id: 's-mng-mbd', name: 'Moodbidri Bus Terminus', latitude: 13.0722, longitude: 74.9961, sequence: 7, distanceFromStartKm: 34.8, isHub: true }
+      { ...getStop('s-mng-sb'), sequence: 1, distanceFromStartKm: 0 },
+      { ...getStop('s-mng-kul'), sequence: 2, distanceFromStartKm: 5.6 },
+      { ...getStop('s-mng-vam'), sequence: 3, distanceFromStartKm: 10.4 },
+      { ...getStop('s-mng-gur'), sequence: 4, distanceFromStartKm: 16.8 },
+      { ...getStop('s-gan-1'), sequence: 5, distanceFromStartKm: 23.5 },
+      { ...getStop('s-mij-1'), sequence: 6, distanceFromStartKm: 29.2 },
+      { ...getStop('s-alv-1'), sequence: 7, distanceFromStartKm: 33.2 },
+      { ...getStop('s-mbd-1'), sequence: 8, distanceFromStartKm: 34.8 }
     ],
     schedule: [
-      { departureTime: '06:45', arrivalTime: '07:50', busId: 'bus-ka19-3101', busNumber: 'KA-19-F-3101', busType: 'KSRTC Ordinary', operator: 'KSRTC Rural Sarige', fareRupees: 42 },
-      { departureTime: '07:30', arrivalTime: '08:35', busId: 'bus-ka19-3102', busNumber: 'KA-19-F-3102', busType: 'KSRTC Ordinary', operator: 'KSRTC Rural Sarige', fareRupees: 42 },
-      { departureTime: '08:15', arrivalTime: '09:20', busId: 'bus-ka19-3101', busNumber: 'KA-19-F-3101', busType: 'KSRTC Ordinary', operator: 'KSRTC Rural Sarige', fareRupees: 42 },
-      { departureTime: '13:30', arrivalTime: '14:35', busId: 'bus-ka19-3102', busNumber: 'KA-19-F-3102', busType: 'KSRTC Ordinary', operator: 'KSRTC Rural Sarige', fareRupees: 42 }
-    ]
-  },
-
-  // 2. Kinnigoli to Moodbidri (Crucial Student Corridor)
-  {
-    id: 'route-14b',
-    routeNumber: '14B',
-    routeName: 'Kinnigoli ↔ Moodbidri (Alva\'s Vidyagiri)',
-    origin: 'Kinnigoli',
-    destination: 'Moodbidri',
-    via: ['Kateel Temple', 'Bajpe Rural Cross', 'Ganjimutt', 'Alva\'s Vidyagiri Gate'],
-    distanceKm: 28.5,
-    estimatedDurationMin: 55,
-    fareRupees: 35,
-    status: 'Active',
-    operatingDays: 'Daily',
-    busType: 'KSRTC Ordinary',
-    associatedBusIds: ['bus-ka19-1401', 'bus-ka19-1402'],
-    stops: [
-      { id: 's-kin-1', name: 'Kinnigoli Bus Stand', latitude: 13.0854, longitude: 74.8722, sequence: 1, distanceFromStartKm: 0, isHub: true },
-      { id: 's-kin-2', name: 'Kateel Temple Junction', latitude: 13.0673, longitude: 74.8488, sequence: 2, distanceFromStartKm: 4.8, isHub: true },
-      { id: 's-kin-3', name: 'Bajpe Rural Cross', latitude: 13.0125, longitude: 74.8790, sequence: 3, distanceFromStartKm: 12.6 },
-      { id: 's-kin-4', name: 'Ganjimutt Tech Zone', latitude: 13.0298, longitude: 74.9450, sequence: 4, distanceFromStartKm: 19.4 },
-      { id: 's-kin-5', name: 'Alva\'s Vidyagiri Campus Gate', latitude: 13.0650, longitude: 74.9890, sequence: 5, distanceFromStartKm: 26.5, isHub: true },
-      { id: 's-kin-6', name: 'Moodbidri Bus Terminus', latitude: 13.0722, longitude: 74.9961, sequence: 6, distanceFromStartKm: 28.5, isHub: true }
-    ],
-    schedule: [
-      { departureTime: '07:15', arrivalTime: '08:10', busId: 'bus-ka19-1401', busNumber: 'KA-19-F-1401', busType: 'KSRTC Ordinary', operator: 'KSRTC Rural Gramina Sarige', fareRupees: 35 },
-      { departureTime: '08:00', arrivalTime: '08:55', busId: 'bus-ka19-1402', busNumber: 'KA-19-F-1402', busType: 'KSRTC Ordinary', operator: 'KSRTC Rural Gramina Sarige', fareRupees: 35 },
-      { departureTime: '13:15', arrivalTime: '14:10', busId: 'bus-ka19-1401', busNumber: 'KA-19-F-1401', busType: 'KSRTC Ordinary', operator: 'KSRTC Rural Gramina Sarige', fareRupees: 35 },
-      { departureTime: '16:45', arrivalTime: '17:40', busId: 'bus-ka19-1402', busNumber: 'KA-19-F-1402', busType: 'KSRTC Ordinary', operator: 'KSRTC Rural Gramina Sarige', fareRupees: 35 }
+      { tripId: 'trip-31m-01', departureTime: '06:45', arrivalTime: '07:50', busId: 'bus-ka19-3101', busNumber: 'KA-19-F-3101', registrationNumber: 'KA-19-F-3101', busType: 'KSRTC Ordinary', operator: 'KSRTC Rural Sarige', fareRupees: 42, capacity: 55, occupiedSeats: 33, availableSeats: 22 },
+      { tripId: 'trip-31m-02', departureTime: '07:30', arrivalTime: '08:35', busId: 'bus-ka19-3102', busNumber: 'KA-19-F-3102', registrationNumber: 'KA-19-F-3102', busType: 'KSRTC Ordinary', operator: 'KSRTC Rural Sarige', fareRupees: 42, capacity: 55, occupiedSeats: 37, availableSeats: 18 },
+      { tripId: 'trip-31m-03', departureTime: '08:15', arrivalTime: '09:20', busId: 'bus-ka19-3101', busNumber: 'KA-19-F-3101', registrationNumber: 'KA-19-F-3101', busType: 'KSRTC Ordinary', operator: 'KSRTC Rural Sarige', fareRupees: 42, capacity: 55, occupiedSeats: 25, availableSeats: 30 }
     ]
   },
 
@@ -119,31 +191,30 @@ export const INITIAL_ROUTES: Route[] = [
     busType: 'Express',
     associatedBusIds: ['bus-ka19-exp-101', 'bus-ka19-exp-102'],
     stops: [
-      { id: 's-mng-bj', name: 'Mangaluru KSRTC Bejai Terminal', latitude: 12.8850, longitude: 74.8480, sequence: 1, distanceFromStartKm: 0, isHub: true },
-      { id: 's-pan-1', name: 'Panambur Port Gate', latitude: 12.9510, longitude: 74.8110, sequence: 2, distanceFromStartKm: 11.2 },
-      { id: 's-sur-1', name: 'NITK Surathkal Main Gate', latitude: 13.0076, longitude: 74.7946, sequence: 3, distanceFromStartKm: 18.5, isHub: true },
-      { id: 's-muk-1', name: 'Mukka Srinivas Hospital', latitude: 13.0280, longitude: 74.7950, sequence: 4, distanceFromStartKm: 22.0 },
-      { id: 's-mul-1', name: 'Mulki Town Bus Stand', latitude: 13.0906, longitude: 74.7937, sequence: 5, distanceFromStartKm: 29.8, isHub: true },
-      { id: 's-pdm-1', name: 'Padubidri Junction', latitude: 13.1420, longitude: 74.7860, sequence: 6, distanceFromStartKm: 37.4 },
-      { id: 's-kau-1', name: 'Kaup Lighthouse Cross', latitude: 13.2240, longitude: 74.7480, sequence: 7, distanceFromStartKm: 46.8 },
-      { id: 's-udp-1', name: 'Udupi Service Bus Stand', latitude: 13.3409, longitude: 74.7421, sequence: 8, distanceFromStartKm: 58.0, isHub: true }
+      { ...getStop('s-mng-bj'), sequence: 1, distanceFromStartKm: 0 },
+      { ...getStop('s-pan-1'), sequence: 2, distanceFromStartKm: 11.2 },
+      { ...getStop('s-sur-1'), sequence: 3, distanceFromStartKm: 18.5 },
+      { ...getStop('s-muk-1'), sequence: 4, distanceFromStartKm: 22.0 },
+      { ...getStop('s-mul-1'), sequence: 5, distanceFromStartKm: 29.8 },
+      { ...getStop('s-pdm-1'), sequence: 6, distanceFromStartKm: 37.4 },
+      { ...getStop('s-kau-1'), sequence: 7, distanceFromStartKm: 46.8 },
+      { ...getStop('s-udp-sb'), sequence: 8, distanceFromStartKm: 58.0 }
     ],
     schedule: [
-      { departureTime: '06:30', arrivalTime: '07:45', busId: 'bus-ka19-exp-101', busNumber: 'KA-19-F-9101', busType: 'Express', operator: 'KSRTC Coastal Express', fareRupees: 65 },
-      { departureTime: '07:15', arrivalTime: '08:30', busId: 'bus-ka19-exp-102', busNumber: 'KA-19-F-9102', busType: 'Express', operator: 'KSRTC Coastal Express', fareRupees: 65 },
-      { departureTime: '08:00', arrivalTime: '09:15', busId: 'bus-ka19-exp-101', busNumber: 'KA-19-F-9101', busType: 'Express', operator: 'KSRTC Coastal Express', fareRupees: 65 },
-      { departureTime: '14:00', arrivalTime: '15:15', busId: 'bus-ka19-exp-102', busNumber: 'KA-19-F-9102', busType: 'Express', operator: 'KSRTC Coastal Express', fareRupees: 65 }
+      { tripId: 'trip-1exp-01', departureTime: '06:30', arrivalTime: '07:45', busId: 'bus-ka19-exp-101', busNumber: 'KA-19-F-9101', registrationNumber: 'KA-19-F-9101', busType: 'Express', operator: 'KSRTC Coastal Express', fareRupees: 65, capacity: 48, occupiedSeats: 22, availableSeats: 26 },
+      { tripId: 'trip-1exp-02', departureTime: '07:15', arrivalTime: '08:30', busId: 'bus-ka19-exp-102', busNumber: 'KA-19-F-9102', registrationNumber: 'KA-19-F-9102', busType: 'Express', operator: 'KSRTC Coastal Express', fareRupees: 65, capacity: 48, occupiedSeats: 37, availableSeats: 11 },
+      { tripId: 'trip-1exp-03', departureTime: '08:00', arrivalTime: '09:15', busId: 'bus-ka19-exp-101', busNumber: 'KA-19-F-9101', registrationNumber: 'KA-19-F-9101', busType: 'Express', operator: 'KSRTC Coastal Express', fareRupees: 65, capacity: 48, occupiedSeats: 19, availableSeats: 29 }
     ]
   },
 
-  // 4. Udupi to Karkala (via Manipal & Hiriadka)
+  // 4. Udupi to Manipal to Karkala
   {
     id: 'route-42u',
     routeNumber: '42U',
     routeName: 'Udupi ↔ Manipal ↔ Hiriadka ↔ Karkala',
     origin: 'Udupi',
     destination: 'Karkala',
-    via: ['Manipal Tiger Circle', 'Hiriadka', 'Belman Cross', 'Anekallu'],
+    via: ['Manipal Tiger Circle', 'Hiriadka', 'Belman Cross'],
     distanceKm: 38.2,
     estimatedDurationMin: 55,
     fareRupees: 45,
@@ -152,27 +223,26 @@ export const INITIAL_ROUTES: Route[] = [
     busType: 'Private Route',
     associatedBusIds: ['bus-ka20-p-4201', 'bus-ka20-p-4202'],
     stops: [
-      { id: 's-udp-sb', name: 'Udupi Service Bus Stand', latitude: 13.3409, longitude: 74.7421, sequence: 1, distanceFromStartKm: 0, isHub: true },
-      { id: 's-mnp-tc', name: 'Manipal Tiger Circle (MAHE)', latitude: 13.3525, longitude: 74.7865, sequence: 2, distanceFromStartKm: 6.2, isHub: true },
-      { id: 's-hir-1', name: 'Hiriadka Bus Stand', latitude: 13.3360, longitude: 74.8720, sequence: 3, distanceFromStartKm: 16.5 },
-      { id: 's-bel-1', name: 'Belman Rural Junction', latitude: 13.2510, longitude: 74.9210, sequence: 4, distanceFromStartKm: 28.0 },
-      { id: 's-krk-1', name: 'Karkala Bus Stand (Bandimath)', latitude: 13.2130, longitude: 74.9980, sequence: 5, distanceFromStartKm: 38.2, isHub: true }
+      { ...getStop('s-udp-sb'), sequence: 1, distanceFromStartKm: 0 },
+      { ...getStop('s-mnp-tc'), sequence: 2, distanceFromStartKm: 6.2 },
+      { ...getStop('s-hir-1'), sequence: 3, distanceFromStartKm: 16.5 },
+      { ...getStop('s-bel-1'), sequence: 4, distanceFromStartKm: 28.0 },
+      { ...getStop('s-krk-1'), sequence: 5, distanceFromStartKm: 38.2 }
     ],
     schedule: [
-      { departureTime: '07:00', arrivalTime: '07:55', busId: 'bus-ka20-p-4201', busNumber: 'KA-20-B-4201', busType: 'Private Route', operator: 'Vishal Coastal Motors', fareRupees: 45 },
-      { departureTime: '07:45', arrivalTime: '08:40', busId: 'bus-ka20-p-4202', busNumber: 'KA-20-B-4202', busType: 'Private Route', operator: 'Canara Star Lines', fareRupees: 45 },
-      { departureTime: '12:30', arrivalTime: '13:25', busId: 'bus-ka20-p-4201', busNumber: 'KA-20-B-4201', busType: 'Private Route', operator: 'Vishal Coastal Motors', fareRupees: 45 }
+      { tripId: 'trip-42u-01', departureTime: '07:00', arrivalTime: '07:55', busId: 'bus-ka20-p-4201', busNumber: 'KA-20-B-4201', registrationNumber: 'KA-20-B-4201', busType: 'Private Route', operator: 'Vishal Coastal Motors', fareRupees: 45, capacity: 45, occupiedSeats: 29, availableSeats: 16 },
+      { tripId: 'trip-42u-02', departureTime: '07:45', arrivalTime: '08:40', busId: 'bus-ka20-p-4202', busNumber: 'KA-20-B-4202', registrationNumber: 'KA-20-B-4202', busType: 'Private Route', operator: 'Canara Star Lines', fareRupees: 45, capacity: 45, occupiedSeats: 37, availableSeats: 8 }
     ]
   },
 
-  // 5. Karkala to Moodbidri (Alva's Education Connector)
+  // 5. Karkala to Moodbidri
   {
     id: 'route-16k',
     routeNumber: '16K',
-    routeName: 'Karkala ↔ Moodbidri (Alva\'s Vidyagiri Direct)',
+    routeName: "Karkala ↔ Moodbidri (Alva's Vidyagiri Direct)",
     origin: 'Karkala',
-    destination: 'Moodbidri',
-    via: ['Anekallu', 'Miyar', 'Pojekallu', 'Alva\'s Vidyagiri Gate'],
+    destination: "Moodbidri (Alva's College)",
+    via: ['Anekallu', 'Miyar', 'Pojekallu', "Alva's Vidyagiri Gate"],
     distanceKm: 18.0,
     estimatedDurationMin: 28,
     fareRupees: 22,
@@ -181,21 +251,18 @@ export const INITIAL_ROUTES: Route[] = [
     busType: 'KSRTC Ordinary',
     associatedBusIds: ['bus-ka20-k-1601', 'bus-ka20-k-1602'],
     stops: [
-      { id: 's-krk-1', name: 'Karkala Bus Stand (Bandimath)', latitude: 13.2130, longitude: 74.9980, sequence: 1, distanceFromStartKm: 0, isHub: true },
-      { id: 's-miy-1', name: 'Miyar Village Cross', latitude: 13.1650, longitude: 74.9970, sequence: 2, distanceFromStartKm: 6.2 },
-      { id: 's-poj-2', name: 'Pojekallu Gate', latitude: 13.1120, longitude: 74.9960, sequence: 3, distanceFromStartKm: 12.5 },
-      { id: 's-alv-1', name: 'Alva\'s Vidyagiri Campus Gate', latitude: 13.0650, longitude: 74.9890, sequence: 4, distanceFromStartKm: 16.5, isHub: true },
-      { id: 's-mbd-1', name: 'Moodbidri Bus Terminus', latitude: 13.0722, longitude: 74.9961, sequence: 5, distanceFromStartKm: 18.0, isHub: true }
+      { ...getStop('s-krk-1'), sequence: 1, distanceFromStartKm: 0 },
+      { ...getStop('s-miy-1'), sequence: 2, distanceFromStartKm: 6.2 },
+      { ...getStop('s-alv-1'), sequence: 3, distanceFromStartKm: 16.5 },
+      { ...getStop('s-mbd-1'), sequence: 4, distanceFromStartKm: 18.0 }
     ],
     schedule: [
-      { departureTime: '07:20', arrivalTime: '07:48', busId: 'bus-ka20-k-1601', busNumber: 'KA-20-F-1601', busType: 'KSRTC Ordinary', operator: 'KSRTC Karkala Depot', fareRupees: 22 },
-      { departureTime: '08:00', arrivalTime: '08:28', busId: 'bus-ka20-k-1602', busNumber: 'KA-20-F-1602', busType: 'KSRTC Ordinary', operator: 'KSRTC Karkala Depot', fareRupees: 22 },
-      { departureTime: '08:40', arrivalTime: '09:08', busId: 'bus-ka20-k-1601', busNumber: 'KA-20-F-1601', busType: 'KSRTC Ordinary', operator: 'KSRTC Karkala Depot', fareRupees: 22 },
-      { departureTime: '16:15', arrivalTime: '16:43', busId: 'bus-ka20-k-1602', busNumber: 'KA-20-F-1602', busType: 'KSRTC Ordinary', operator: 'KSRTC Karkala Depot', fareRupees: 22 }
+      { tripId: 'trip-16k-01', departureTime: '07:20', arrivalTime: '07:48', busId: 'bus-ka20-k-1601', busNumber: 'KA-20-F-1601', registrationNumber: 'KA-20-F-1601', busType: 'KSRTC Ordinary', operator: 'KSRTC Karkala Depot', fareRupees: 22, capacity: 50, occupiedSeats: 26, availableSeats: 24 },
+      { tripId: 'trip-16k-02', departureTime: '08:00', arrivalTime: '08:28', busId: 'bus-ka20-k-1602', busNumber: 'KA-20-F-1602', registrationNumber: 'KA-20-F-1602', busType: 'KSRTC Ordinary', operator: 'KSRTC Karkala Depot', fareRupees: 22, capacity: 50, occupiedSeats: 35, availableSeats: 15 }
     ]
   },
 
-  // 6. Mangaluru to Bantwal (BC Road) to Puttur
+  // 6. Mangaluru to Bantwal to Puttur
   {
     id: 'route-24p',
     routeNumber: '24P',
@@ -211,29 +278,28 @@ export const INITIAL_ROUTES: Route[] = [
     busType: 'KSRTC Ordinary',
     associatedBusIds: ['bus-ka19-p-2401', 'bus-ka19-p-2402'],
     stops: [
-      { id: 's-mng-sb', name: 'Mangaluru State Bank Terminus', latitude: 12.8624, longitude: 74.8398, sequence: 1, distanceFromStartKm: 0, isHub: true },
-      { id: 's-pad-1', name: 'Padil Junction', latitude: 12.8690, longitude: 74.8850, sequence: 2, distanceFromStartKm: 6.8 },
-      { id: 's-far-1', name: 'Farangipete Rural Stop', latitude: 12.8780, longitude: 74.9350, sequence: 3, distanceFromStartKm: 13.5 },
-      { id: 's-btw-bc', name: 'Bantwal BC Road Bus Stand', latitude: 12.8931, longitude: 75.0352, sequence: 4, distanceFromStartKm: 25.0, isHub: true },
-      { id: 's-mni-1', name: 'Mani Junction (Mysuru Highway)', latitude: 12.8610, longitude: 75.1250, sequence: 5, distanceFromStartKm: 36.2, isHub: true },
-      { id: 's-ptr-dr', name: 'Puttur Darbe Circle', latitude: 12.7680, longitude: 75.1980, sequence: 6, distanceFromStartKm: 49.5 },
-      { id: 's-ptr-bs', name: 'Puttur KSRTC Bus Stand', latitude: 12.7635, longitude: 75.2038, sequence: 7, distanceFromStartKm: 52.4, isHub: true }
+      { ...getStop('s-mng-sb'), sequence: 1, distanceFromStartKm: 0 },
+      { ...getStop('s-pad-1'), sequence: 2, distanceFromStartKm: 6.8 },
+      { ...getStop('s-far-1'), sequence: 3, distanceFromStartKm: 13.5 },
+      { ...getStop('s-btw-bc'), sequence: 4, distanceFromStartKm: 25.0 },
+      { ...getStop('s-mni-1'), sequence: 5, distanceFromStartKm: 36.2 },
+      { ...getStop('s-ptr-dr'), sequence: 6, distanceFromStartKm: 49.5 },
+      { ...getStop('s-ptr-bs'), sequence: 7, distanceFromStartKm: 52.4 }
     ],
     schedule: [
-      { departureTime: '06:40', arrivalTime: '07:55', busId: 'bus-ka19-p-2401', busNumber: 'KA-19-F-2401', busType: 'KSRTC Ordinary', operator: 'KSRTC Puttur Division', fareRupees: 60 },
-      { departureTime: '07:25', arrivalTime: '08:40', busId: 'bus-ka19-p-2402', busNumber: 'KA-19-F-2402', busType: 'KSRTC Ordinary', operator: 'KSRTC Puttur Division', fareRupees: 60 },
-      { departureTime: '08:10', arrivalTime: '09:25', busId: 'bus-ka19-p-2401', busNumber: 'KA-19-F-2401', busType: 'KSRTC Ordinary', operator: 'KSRTC Puttur Division', fareRupees: 60 }
+      { tripId: 'trip-24p-01', departureTime: '06:40', arrivalTime: '07:55', busId: 'bus-ka19-p-2401', busNumber: 'KA-19-F-2401', registrationNumber: 'KA-19-F-2401', busType: 'KSRTC Ordinary', operator: 'KSRTC Puttur Division', fareRupees: 60, capacity: 55, occupiedSeats: 34, availableSeats: 21 },
+      { tripId: 'trip-24p-02', departureTime: '07:25', arrivalTime: '08:40', busId: 'bus-ka19-p-2402', busNumber: 'KA-19-F-2402', registrationNumber: 'KA-19-F-2402', busType: 'KSRTC Ordinary', operator: 'KSRTC Puttur Division', fareRupees: 60, capacity: 55, occupiedSeats: 42, availableSeats: 13 }
     ]
   },
 
-  // 7. Bantwal to Belthangady to Ujire (SDM College) to Dharmasthala
+  // 7. Bantwal to Belthangady to Ujire (SDM)
   {
     id: 'route-77b',
     routeNumber: '77B',
     routeName: 'Bantwal (BC Road) ↔ Belthangady ↔ Ujire (SDM) ↔ Dharmasthala',
     origin: 'Bantwal',
     destination: 'Belthangady',
-    via: ['Vittal Cross', 'Punjalkatte', 'Madanthyar (Sacred Heart College)', 'Belthangady Court', 'Ujire SDM College'],
+    via: ['Vittal Cross', 'Punjalkatte', 'Madanthyar', 'Belthangady Court', 'Ujire SDM College'],
     distanceKm: 42.0,
     estimatedDurationMin: 60,
     fareRupees: 48,
@@ -242,24 +308,22 @@ export const INITIAL_ROUTES: Route[] = [
     busType: 'KSRTC Ordinary',
     associatedBusIds: ['bus-ka19-b-7701', 'bus-ka19-b-7702'],
     stops: [
-      { id: 's-btw-bc', name: 'Bantwal BC Road Bus Stand', latitude: 12.8931, longitude: 75.0352, sequence: 1, distanceFromStartKm: 0, isHub: true },
-      { id: 's-pun-1', name: 'Punjalkatte Grama Cross', latitude: 12.9420, longitude: 75.1320, sequence: 2, distanceFromStartKm: 13.8 },
-      { id: 's-mad-1', name: 'Madanthyar (Sacred Heart College)', latitude: 12.9680, longitude: 75.1850, sequence: 3, distanceFromStartKm: 21.0, isHub: true },
-      { id: 's-blt-1', name: 'Belthangady Bus Stand', latitude: 13.0030, longitude: 75.2580, sequence: 4, distanceFromStartKm: 31.5, isHub: true },
-      { id: 's-ujr-1', name: 'Ujire (SDM College Campus)', latitude: 13.0180, longitude: 75.3210, sequence: 5, distanceFromStartKm: 42.0, isHub: true }
+      { ...getStop('s-btw-bc'), sequence: 1, distanceFromStartKm: 0 },
+      { ...getStop('s-far-1'), sequence: 2, distanceFromStartKm: 13.8 },
+      { ...getStop('s-blt-1'), sequence: 3, distanceFromStartKm: 31.5 },
+      { ...getStop('s-ujr-1'), sequence: 4, distanceFromStartKm: 42.0 }
     ],
     schedule: [
-      { departureTime: '07:05', arrivalTime: '08:05', busId: 'bus-ka19-b-7701', busNumber: 'KA-19-F-7701', busType: 'KSRTC Ordinary', operator: 'KSRTC Belthangady Depot', fareRupees: 48 },
-      { departureTime: '08:00', arrivalTime: '09:00', busId: 'bus-ka19-b-7702', busNumber: 'KA-19-F-7702', busType: 'KSRTC Ordinary', operator: 'KSRTC Belthangady Depot', fareRupees: 48 },
-      { departureTime: '15:30', arrivalTime: '16:30', busId: 'bus-ka19-b-7701', busNumber: 'KA-19-F-7701', busType: 'KSRTC Ordinary', operator: 'KSRTC Belthangady Depot', fareRupees: 48 }
+      { tripId: 'trip-77b-01', departureTime: '07:05', arrivalTime: '08:05', busId: 'bus-ka19-b-7701', busNumber: 'KA-19-F-7701', registrationNumber: 'KA-19-F-7701', busType: 'KSRTC Ordinary', operator: 'KSRTC Belthangady Depot', fareRupees: 48, capacity: 52, occupiedSeats: 35, availableSeats: 17 },
+      { tripId: 'trip-77b-02', departureTime: '08:00', arrivalTime: '09:00', busId: 'bus-ka19-b-7702', busNumber: 'KA-19-F-7702', registrationNumber: 'KA-19-F-7702', busType: 'KSRTC Ordinary', operator: 'KSRTC Belthangady Depot', fareRupees: 48, capacity: 52, occupiedSeats: 24, availableSeats: 28 }
     ]
   },
 
-  // 8. Puttur to Uppinangady to Gundya
+  // 8. Puttur to Uppinangady
   {
     id: 'route-88u',
     routeNumber: '88U',
-    routeName: 'Puttur ↔ Uppinangady ↔ Nellyadi',
+    routeName: 'Puttur ↔ Uppinangady Sangam',
     origin: 'Puttur',
     destination: 'Uppinangady',
     via: ['Kavu', 'Kemminje', 'Uppinangady Sangam'],
@@ -271,40 +335,38 @@ export const INITIAL_ROUTES: Route[] = [
     busType: 'Private Route',
     associatedBusIds: ['bus-ka19-u-8801'],
     stops: [
-      { id: 's-ptr-bs', name: 'Puttur KSRTC Bus Stand', latitude: 12.7635, longitude: 75.2038, sequence: 1, distanceFromStartKm: 0, isHub: true },
-      { id: 's-kav-1', name: 'Kavu Grama Cross', latitude: 12.8020, longitude: 75.2410, sequence: 2, distanceFromStartKm: 8.5 },
-      { id: 's-upp-1', name: 'Uppinangady Sangam Bus Stand', latitude: 12.8350, longitude: 75.2890, sequence: 3, distanceFromStartKm: 22.5, isHub: true }
+      { ...getStop('s-ptr-bs'), sequence: 1, distanceFromStartKm: 0 },
+      { ...getStop('s-kav-1'), sequence: 2, distanceFromStartKm: 8.5 },
+      { ...getStop('s-upp-1'), sequence: 3, distanceFromStartKm: 22.5 }
     ],
     schedule: [
-      { departureTime: '07:30', arrivalTime: '08:05', busId: 'bus-ka19-u-8801', busNumber: 'KA-19-B-8801', busType: 'Private Route', operator: 'Durgamba Motor Service', fareRupees: 28 },
-      { departureTime: '08:45', arrivalTime: '09:20', busId: 'bus-ka19-u-8801', busNumber: 'KA-19-B-8801', busType: 'Private Route', operator: 'Durgamba Motor Service', fareRupees: 28 }
+      { tripId: 'trip-88u-01', departureTime: '07:30', arrivalTime: '08:05', busId: 'bus-ka19-u-8801', busNumber: 'KA-19-B-8801', registrationNumber: 'KA-19-B-8801', busType: 'Private Route', operator: 'Durgamba Motor Service', fareRupees: 28, capacity: 40, occupiedSeats: 28, availableSeats: 12 }
     ]
   },
 
-  // 9. Kateel to Bajpe Airport Hub Feeder
+  // 9. Kateel to Bajpe Feeder
   {
     id: 'route-31c',
     routeNumber: '31C',
     routeName: 'Kateel ↔ Permude ↔ Bajpe Bus Station',
     origin: 'Kateel',
     destination: 'Bajpe',
-    via: ['Permude', 'Yekkar Grama Panchayat', 'Bajpe Airport Road'],
+    via: ['Permude', 'Yekkar Grama', 'Bajpe Airport Road'],
     distanceKm: 12.0,
     estimatedDurationMin: 22,
     fareRupees: 18,
     status: 'Active',
     operatingDays: 'Daily',
     busType: 'KSRTC Ordinary',
-    associatedBusIds: ['bus-ka19-3101-f'],
+    associatedBusIds: ['bus-ka19-3111'],
     stops: [
-      { id: 's-kin-2', name: 'Kateel Temple Junction', latitude: 13.0673, longitude: 74.8488, sequence: 1, distanceFromStartKm: 0, isHub: true },
-      { id: 's-yek-1', name: 'Yekkar Grama Panchayat', latitude: 13.0310, longitude: 74.8640, sequence: 2, distanceFromStartKm: 5.4 },
-      { id: 's-baj-hub', name: 'Bajpe Bus Station', latitude: 12.9818, longitude: 74.8872, sequence: 3, distanceFromStartKm: 12.0, isHub: true }
+      { ...getStop('s-kat-1'), sequence: 1, distanceFromStartKm: 0 },
+      { ...getStop('s-yek-1'), sequence: 2, distanceFromStartKm: 5.4 },
+      { ...getStop('s-baj-hub'), sequence: 3, distanceFromStartKm: 12.0 }
     ],
     schedule: [
-      { departureTime: '07:30', arrivalTime: '07:52', busId: 'bus-ka19-3101-f', busNumber: 'KA-19-F-3111', busType: 'KSRTC Ordinary', operator: 'KSRTC Rural Feeder', fareRupees: 18 },
-      { departureTime: '08:15', arrivalTime: '08:37', busId: 'bus-ka19-3101-f', busNumber: 'KA-19-F-3111', busType: 'KSRTC Ordinary', operator: 'KSRTC Rural Feeder', fareRupees: 18 },
-      { departureTime: '09:00', arrivalTime: '09:22', busId: 'bus-ka19-3101-f', busNumber: 'KA-19-F-3111', busType: 'KSRTC Ordinary', operator: 'KSRTC Rural Feeder', fareRupees: 18 }
+      { tripId: 'trip-31c-01', departureTime: '07:30', arrivalTime: '07:52', busId: 'bus-ka19-3111', busNumber: 'KA-19-F-3111', registrationNumber: 'KA-19-F-3111', busType: 'KSRTC Ordinary', operator: 'KSRTC Rural Feeder', fareRupees: 18, capacity: 45, occupiedSeats: 23, availableSeats: 22 },
+      { tripId: 'trip-31c-02', departureTime: '08:15', arrivalTime: '08:37', busId: 'bus-ka19-3111', busNumber: 'KA-19-F-3111', registrationNumber: 'KA-19-F-3111', busType: 'KSRTC Ordinary', operator: 'KSRTC Rural Feeder', fareRupees: 18, capacity: 45, occupiedSeats: 30, availableSeats: 15 }
     ]
   },
 
@@ -312,10 +374,10 @@ export const INITIAL_ROUTES: Route[] = [
   {
     id: 'route-45f',
     routeNumber: '45F',
-    routeName: 'Bajpe ↔ Ganjimutt ↔ Mijar ↔ Moodbidri',
+    routeName: "Bajpe ↔ Ganjimutt ↔ Mijar ↔ Moodbidri (Alva's College)",
     origin: 'Bajpe',
-    destination: 'Moodbidri',
-    via: ['Pojekallu', 'Mijar (Alva\'s Shobhavana Campus)'],
+    destination: "Moodbidri (Alva's College)",
+    via: ['Pojekallu', "Mijar (Alva's Shobhavana)"],
     distanceKm: 19.4,
     estimatedDurationMin: 35,
     fareRupees: 28,
@@ -324,15 +386,15 @@ export const INITIAL_ROUTES: Route[] = [
     busType: 'Private Route',
     associatedBusIds: ['bus-ka19-4501'],
     stops: [
-      { id: 's-baj-hub', name: 'Bajpe Bus Station', latitude: 12.9818, longitude: 74.8872, sequence: 1, distanceFromStartKm: 0, isHub: true },
-      { id: 's-poj-1', name: 'Pojekallu Cross', latitude: 13.0150, longitude: 74.9250, sequence: 2, distanceFromStartKm: 7.2 },
-      { id: 's-mij-1', name: 'Mijar Alvas Engineering', latitude: 13.0480, longitude: 74.9650, sequence: 3, distanceFromStartKm: 13.8 },
-      { id: 's-mbd-1', name: 'Moodbidri Bus Terminus', latitude: 13.0722, longitude: 74.9961, sequence: 4, distanceFromStartKm: 19.4, isHub: true }
+      { ...getStop('s-baj-hub'), sequence: 1, distanceFromStartKm: 0 },
+      { ...getStop('s-poj-1'), sequence: 2, distanceFromStartKm: 7.2 },
+      { ...getStop('s-mij-1'), sequence: 3, distanceFromStartKm: 13.8 },
+      { ...getStop('s-alv-1'), sequence: 4, distanceFromStartKm: 17.5 },
+      { ...getStop('s-mbd-1'), sequence: 5, distanceFromStartKm: 19.4 }
     ],
     schedule: [
-      { departureTime: '07:45', arrivalTime: '08:20', busId: 'bus-ka19-4501', busNumber: 'KA-19-F-4501', busType: 'Private Route', operator: 'Moodbidri Janatha Shuttle', fareRupees: 28 },
-      { departureTime: '08:35', arrivalTime: '09:10', busId: 'bus-ka19-4501', busNumber: 'KA-19-F-4501', busType: 'Private Route', operator: 'Moodbidri Janatha Shuttle', fareRupees: 28 },
-      { departureTime: '17:00', arrivalTime: '17:35', busId: 'bus-ka19-4501', busNumber: 'KA-19-F-4501', busType: 'Private Route', operator: 'Moodbidri Janatha Shuttle', fareRupees: 28 }
+      { tripId: 'trip-45f-01', departureTime: '07:45', arrivalTime: '08:20', busId: 'bus-ka19-4501', busNumber: 'KA-19-F-4501', registrationNumber: 'KA-19-F-4501', busType: 'Private Route', operator: 'Moodbidri Janatha Shuttle', fareRupees: 28, capacity: 40, occupiedSeats: 22, availableSeats: 18 },
+      { tripId: 'trip-45f-02', departureTime: '08:35', arrivalTime: '09:10', busId: 'bus-ka19-4501', busNumber: 'KA-19-F-4501', registrationNumber: 'KA-19-F-4501', busType: 'Private Route', operator: 'Moodbidri Janatha Shuttle', fareRupees: 28, capacity: 40, occupiedSeats: 16, availableSeats: 24 }
     ]
   },
 
@@ -352,19 +414,18 @@ export const INITIAL_ROUTES: Route[] = [
     busType: 'KSRTC Ordinary',
     associatedBusIds: ['bus-ka19-2201', 'bus-ka19-2202'],
     stops: [
-      { id: 's-mng-gur', name: 'Gurupura Kaikamba Junction', latitude: 12.9463, longitude: 74.9351, sequence: 1, distanceFromStartKm: 0, isHub: true },
-      { id: 's-pol-1', name: 'Polali Dwara Stop', latitude: 12.9350, longitude: 74.9210, sequence: 2, distanceFromStartKm: 4.5 },
-      { id: 's-pil-1', name: 'Pilikula Heritage Gate', latitude: 12.9260, longitude: 74.9080, sequence: 3, distanceFromStartKm: 8.8 },
-      { id: 's-mng-vam', name: 'Vamanjoor (St. Joseph Engg Gate)', latitude: 12.9197, longitude: 74.8967, sequence: 4, distanceFromStartKm: 14.2, isHub: true }
+      { ...getStop('s-mng-gur'), sequence: 1, distanceFromStartKm: 0 },
+      { ...getStop('s-pol-1'), sequence: 2, distanceFromStartKm: 4.5 },
+      { ...getStop('s-pil-1'), sequence: 3, distanceFromStartKm: 8.8 },
+      { ...getStop('s-mng-vam'), sequence: 4, distanceFromStartKm: 14.2 }
     ],
     schedule: [
-      { departureTime: '07:45', arrivalTime: '08:17', busId: 'bus-ka19-2201', busNumber: 'KA-19-F-2201', busType: 'KSRTC Ordinary', operator: 'Dakshina Kannada District Sarige', fareRupees: 22 },
-      { departureTime: '08:30', arrivalTime: '09:02', busId: 'bus-ka19-2202', busNumber: 'KA-19-F-2202', busType: 'KSRTC Ordinary', operator: 'Dakshina Kannada District Sarige', fareRupees: 22 },
-      { departureTime: '14:00', arrivalTime: '14:32', busId: 'bus-ka19-2201', busNumber: 'KA-19-F-2201', busType: 'KSRTC Ordinary', operator: 'Dakshina Kannada District Sarige', fareRupees: 22 }
+      { tripId: 'trip-22a-01', departureTime: '07:45', arrivalTime: '08:17', busId: 'bus-ka19-2201', busNumber: 'KA-19-F-2201', registrationNumber: 'KA-19-F-2201', busType: 'KSRTC Ordinary', operator: 'Dakshina Kannada District Sarige', fareRupees: 22, capacity: 48, occupiedSeats: 48, availableSeats: 0 },
+      { tripId: 'trip-22a-02', departureTime: '08:30', arrivalTime: '09:02', busId: 'bus-ka19-2202', busNumber: 'KA-19-F-2202', registrationNumber: 'KA-19-F-2202', busType: 'KSRTC Ordinary', operator: 'Dakshina Kannada District Sarige', fareRupees: 22, capacity: 48, occupiedSeats: 29, availableSeats: 19 }
     ]
   },
 
-  // 12. Bantwal to Benjanapadavu (Canara Engg) to Vamanjoor (SJEC)
+  // 12. Bantwal to Benjanapadavu to Vamanjoor
   {
     id: 'route-60b',
     routeNumber: '60B',
@@ -380,22 +441,21 @@ export const INITIAL_ROUTES: Route[] = [
     busType: 'College Shuttle',
     associatedBusIds: ['bus-ka19-6001'],
     stops: [
-      { id: 's-btw-bc', name: 'Bantwal BC Road Bus Stand', latitude: 12.8931, longitude: 75.0352, sequence: 1, distanceFromStartKm: 0, isHub: true },
-      { id: 's-can-1', name: 'Benjanapadavu Canara Engg Gate', latitude: 12.8990, longitude: 74.9810, sequence: 2, distanceFromStartKm: 6.8, isHub: true },
-      { id: 's-far-1', name: 'Farangipete Rural Stop', latitude: 12.8780, longitude: 74.9350, sequence: 3, distanceFromStartKm: 12.4 },
-      { id: 's-mng-vam', name: 'Vamanjoor (St. Joseph Engg Gate)', latitude: 12.9197, longitude: 74.8967, sequence: 4, distanceFromStartKm: 18.2, isHub: true }
+      { ...getStop('s-btw-bc'), sequence: 1, distanceFromStartKm: 0 },
+      { ...getStop('s-can-1'), sequence: 2, distanceFromStartKm: 6.8 },
+      { ...getStop('s-far-1'), sequence: 3, distanceFromStartKm: 12.4 },
+      { ...getStop('s-mng-vam'), sequence: 4, distanceFromStartKm: 18.2 }
     ],
     schedule: [
-      { departureTime: '07:40', arrivalTime: '08:18', busId: 'bus-ka19-6001', busNumber: 'KA-19-F-6001', busType: 'College Shuttle', operator: 'Bantwal Taluk Education Bus', fareRupees: 26 },
-      { departureTime: '08:45', arrivalTime: '09:23', busId: 'bus-ka19-6001', busNumber: 'KA-19-F-6001', busType: 'College Shuttle', operator: 'Bantwal Taluk Education Bus', fareRupees: 26 }
+      { tripId: 'trip-60b-01', departureTime: '07:40', arrivalTime: '08:18', busId: 'bus-ka19-6001', busNumber: 'KA-19-F-6001', registrationNumber: 'KA-19-F-6001', busType: 'College Shuttle', operator: 'Bantwal Taluk Education Bus', fareRupees: 26, capacity: 50, occupiedSeats: 31, availableSeats: 19 }
     ]
   },
 
-  // 13. Mulki to Kinnigoli to Kateel Rural Circular
+  // 13. Mulki to Kinnigoli to Kateel Feeder
   {
     id: 'route-18c',
     routeNumber: '18C',
-    routeName: 'Mulki ↔ Kinnigoli ↔ Kateel Rural Circular',
+    routeName: 'Mulki ↔ Kinnigoli ↔ Kateel Rural Feeder',
     origin: 'Mulki',
     destination: 'Kateel',
     via: ['Bappanadu Temple', 'Punaroor Cross', 'Kinnigoli Church', 'Kateel Temple'],
@@ -407,26 +467,25 @@ export const INITIAL_ROUTES: Route[] = [
     busType: 'Shared Feeder',
     associatedBusIds: ['bus-ka19-sh-1801'],
     stops: [
-      { id: 's-mul-1', name: 'Mulki Town Bus Stand', latitude: 13.0906, longitude: 74.7937, sequence: 1, distanceFromStartKm: 0, isHub: true },
-      { id: 's-bap-1', name: 'Bappanadu Temple Stop', latitude: 13.0940, longitude: 74.8120, sequence: 2, distanceFromStartKm: 3.2 },
-      { id: 's-kin-1', name: 'Kinnigoli Bus Stand', latitude: 13.0854, longitude: 74.8722, sequence: 3, distanceFromStartKm: 9.7, isHub: true },
-      { id: 's-kin-2', name: 'Kateel Temple Junction', latitude: 13.0673, longitude: 74.8488, sequence: 4, distanceFromStartKm: 14.5, isHub: true }
+      { ...getStop('s-mul-1'), sequence: 1, distanceFromStartKm: 0 },
+      { ...getStop('s-bap-1'), sequence: 2, distanceFromStartKm: 3.2 },
+      { ...getStop('s-kin-1'), sequence: 3, distanceFromStartKm: 9.7 },
+      { ...getStop('s-kat-1'), sequence: 4, distanceFromStartKm: 14.5 }
     ],
     schedule: [
-      { departureTime: '07:00', arrivalTime: '07:28', busId: 'bus-ka19-sh-1801', busNumber: 'KA-19-MC-1801', busType: 'Shared Feeder', operator: 'Gramina Maxicab Union', fareRupees: 20 },
-      { departureTime: '07:40', arrivalTime: '08:08', busId: 'bus-ka19-sh-1801', busNumber: 'KA-19-MC-1801', busType: 'Shared Feeder', operator: 'Gramina Maxicab Union', fareRupees: 20 },
-      { departureTime: '08:20', arrivalTime: '08:48', busId: 'bus-ka19-sh-1801', busNumber: 'KA-19-MC-1801', busType: 'Shared Feeder', operator: 'Gramina Maxicab Union', fareRupees: 20 }
+      { tripId: 'trip-18c-01', departureTime: '07:00', arrivalTime: '07:28', busId: 'bus-ka19-sh-1801', busNumber: 'KA-19-MC-1801', registrationNumber: 'KA-19-MC-1801', busType: 'Shared Feeder', operator: 'Gramina Maxicab Union', fareRupees: 20, capacity: 12, occupiedSeats: 7, availableSeats: 5 },
+      { tripId: 'trip-18c-02', departureTime: '07:40', arrivalTime: '08:08', busId: 'bus-ka19-sh-1801', busNumber: 'KA-19-MC-1801', registrationNumber: 'KA-19-MC-1801', busType: 'Shared Feeder', operator: 'Gramina Maxicab Union', fareRupees: 20, capacity: 12, occupiedSeats: 6, availableSeats: 6 }
     ]
   },
 
-  // 14. Moodbidri to Belthangady Crosslink
+  // 14. Moodbidri to Belthangady
   {
     id: 'route-92m',
     routeNumber: '92M',
     routeName: 'Moodbidri ↔ Venur (Gommateshwara) ↔ Belthangady',
     origin: 'Moodbidri',
     destination: 'Belthangady',
-    via: ['Alva\'s Vidyagiri', 'Venur Gommateshwara', 'Guruvayanakere'],
+    via: ["Alva's Vidyagiri", 'Venur Gommateshwara', 'Guruvayanakere'],
     distanceKm: 32.0,
     estimatedDurationMin: 50,
     fareRupees: 38,
@@ -435,18 +494,17 @@ export const INITIAL_ROUTES: Route[] = [
     busType: 'KSRTC Ordinary',
     associatedBusIds: ['bus-ka19-9201'],
     stops: [
-      { id: 's-mbd-1', name: 'Moodbidri Bus Terminus', latitude: 13.0722, longitude: 74.9961, sequence: 1, distanceFromStartKm: 0, isHub: true },
-      { id: 's-ven-1', name: 'Venur Gommateshwara Circle', latitude: 13.0480, longitude: 75.1450, sequence: 2, distanceFromStartKm: 16.5, isHub: true },
-      { id: 's-grv-1', name: 'Guruvayanakere Cross', latitude: 13.0210, longitude: 75.2280, sequence: 3, distanceFromStartKm: 26.2 },
-      { id: 's-blt-1', name: 'Belthangady Bus Stand', latitude: 13.0030, longitude: 75.2580, sequence: 4, distanceFromStartKm: 32.0, isHub: true }
+      { ...getStop('s-mbd-1'), sequence: 1, distanceFromStartKm: 0 },
+      { ...getStop('s-ven-1'), sequence: 2, distanceFromStartKm: 16.5 },
+      { ...getStop('s-grv-1'), sequence: 3, distanceFromStartKm: 26.2 },
+      { ...getStop('s-blt-1'), sequence: 4, distanceFromStartKm: 32.0 }
     ],
     schedule: [
-      { departureTime: '07:15', arrivalTime: '08:05', busId: 'bus-ka19-9201', busNumber: 'KA-19-F-9201', busType: 'KSRTC Ordinary', operator: 'KSRTC Rural Gramina Sarige', fareRupees: 38 },
-      { departureTime: '08:30', arrivalTime: '09:20', busId: 'bus-ka19-9201', busNumber: 'KA-19-F-9201', busType: 'KSRTC Ordinary', operator: 'KSRTC Rural Gramina Sarige', fareRupees: 38 }
+      { tripId: 'trip-92m-01', departureTime: '07:15', arrivalTime: '08:05', busId: 'bus-ka19-9201', busNumber: 'KA-19-F-9201', registrationNumber: 'KA-19-F-9201', busType: 'KSRTC Ordinary', operator: 'KSRTC Rural Gramina Sarige', fareRupees: 38, capacity: 52, occupiedSeats: 21, availableSeats: 31 }
     ]
   },
 
-  // 15. Surathkal (NITK) to Bajpe Airport Road Link
+  // 15. Surathkal (NITK) to Bajpe Airport
   {
     id: 'route-11s',
     routeNumber: '11S',
@@ -462,61 +520,168 @@ export const INITIAL_ROUTES: Route[] = [
     busType: 'College Shuttle',
     associatedBusIds: ['bus-ka19-nitk-1101'],
     stops: [
-      { id: 's-sur-1', name: 'NITK Surathkal Main Gate', latitude: 13.0076, longitude: 74.7946, sequence: 1, distanceFromStartKm: 0, isHub: true },
-      { id: 's-hal-1', name: 'Haleyangadi Grama Cross', latitude: 13.0580, longitude: 74.7940, sequence: 2, distanceFromStartKm: 6.5 },
-      { id: 's-kin-1', name: 'Kinnigoli Bus Stand', latitude: 13.0854, longitude: 74.8722, sequence: 3, distanceFromStartKm: 14.8, isHub: true },
-      { id: 's-kin-2', name: 'Kateel Temple Junction', latitude: 13.0673, longitude: 74.8488, sequence: 4, distanceFromStartKm: 19.6, isHub: true },
-      { id: 's-baj-hub', name: 'Bajpe Bus Station', latitude: 12.9818, longitude: 74.8872, sequence: 5, distanceFromStartKm: 26.8, isHub: true }
+      { ...getStop('s-sur-1'), sequence: 1, distanceFromStartKm: 0 },
+      { ...getStop('s-hal-1'), sequence: 2, distanceFromStartKm: 6.5 },
+      { ...getStop('s-kin-1'), sequence: 3, distanceFromStartKm: 14.8 },
+      { ...getStop('s-kat-1'), sequence: 4, distanceFromStartKm: 19.6 },
+      { ...getStop('s-baj-hub'), sequence: 5, distanceFromStartKm: 26.8 }
     ],
     schedule: [
-      { departureTime: '07:20', arrivalTime: '08:05', busId: 'bus-ka19-nitk-1101', busNumber: 'KA-19-C-1101', busType: 'College Shuttle', operator: 'NITK Student Campus Express', fareRupees: 32 },
-      { departureTime: '08:15', arrivalTime: '09:00', busId: 'bus-ka19-nitk-1101', busNumber: 'KA-19-C-1101', busType: 'College Shuttle', operator: 'NITK Student Campus Express', fareRupees: 32 }
+      { tripId: 'trip-11s-01', departureTime: '07:20', arrivalTime: '08:05', busId: 'bus-ka19-nitk-1101', busNumber: 'KA-19-C-1101', registrationNumber: 'KA-19-C-1101', busType: 'College Shuttle', operator: 'NITK Student Campus Express', fareRupees: 32, capacity: 45, occupiedSeats: 25, availableSeats: 20 }
     ]
   },
 
-  // 16. Alva's College Intra-Campus Shuttle
+  // 16. Alva's Campus Shuttle (Moodbidri Terminus to Vidyagiri to Mijar Shobhavana)
   {
     id: 'route-alv-sh',
     routeNumber: 'ALV-SH',
-    routeName: 'Alva\'s Vidyagiri ↔ Moodbidri Bus Stand ↔ Shobhavana Campus',
+    routeName: "Alva's Vidyagiri ↔ Moodbidri Bus Stand ↔ Shobhavana Campus",
     origin: 'Moodbidri',
-    destination: 'Mijar',
+    destination: "Moodbidri (Alva's College)",
     via: ['Moodbidri Bus Terminus', 'Vidyagiri Gate', 'Engineering College', 'Shobhavana Ayur Campus'],
     distanceKm: 8.5,
     estimatedDurationMin: 18,
     fareRupees: 10,
     status: 'Active',
-    operatingDays: 'College Days',
+    operatingDays: 'Daily',
     busType: 'College Shuttle',
     associatedBusIds: ['bus-alv-01', 'bus-alv-02'],
     stops: [
-      { id: 's-mbd-1', name: 'Moodbidri Bus Terminus', latitude: 13.0722, longitude: 74.9961, sequence: 1, distanceFromStartKm: 0, isHub: true },
-      { id: 's-alv-1', name: 'Alva\'s Vidyagiri Campus Gate', latitude: 13.0650, longitude: 74.9890, sequence: 2, distanceFromStartKm: 2.2, isHub: true },
-      { id: 's-alv-eng', name: 'Alva\'s Engineering Block', latitude: 13.0550, longitude: 74.9780, sequence: 3, distanceFromStartKm: 4.8 },
-      { id: 's-mij-1', name: 'Mijar Alvas Engineering', latitude: 13.0480, longitude: 74.9650, sequence: 4, distanceFromStartKm: 8.5, isHub: true }
+      { ...getStop('s-mbd-1'), sequence: 1, distanceFromStartKm: 0 },
+      { ...getStop('s-alv-1'), sequence: 2, distanceFromStartKm: 2.2 },
+      { ...getStop('s-alv-eng'), sequence: 3, distanceFromStartKm: 4.8 },
+      { ...getStop('s-mij-1'), sequence: 4, distanceFromStartKm: 8.5 }
     ],
     schedule: [
-      { departureTime: '07:30', arrivalTime: '07:48', busId: 'bus-alv-01', busNumber: 'KA-19-ALV-01', busType: 'College Shuttle', operator: 'Alva\'s Education Foundation', fareRupees: 10 },
-      { departureTime: '08:00', arrivalTime: '08:18', busId: 'bus-alv-02', busNumber: 'KA-19-ALV-02', busType: 'College Shuttle', operator: 'Alva\'s Education Foundation', fareRupees: 10 },
-      { departureTime: '08:30', arrivalTime: '08:48', busId: 'bus-alv-01', busNumber: 'KA-19-ALV-01', busType: 'College Shuttle', operator: 'Alva\'s Education Foundation', fareRupees: 10 }
+      { tripId: 'trip-alv-01', departureTime: '07:30', arrivalTime: '07:48', busId: 'bus-alv-01', busNumber: 'KA-19-ALV-01', registrationNumber: 'KA-19-ALV-01', busType: 'College Shuttle', operator: "Alva's Education Foundation", fareRupees: 10, capacity: 40, occupiedSeats: 25, availableSeats: 15 },
+      { tripId: 'trip-alv-02', departureTime: '08:00', arrivalTime: '08:18', busId: 'bus-alv-02', busNumber: 'KA-19-ALV-02', registrationNumber: 'KA-19-ALV-02', busType: 'College Shuttle', operator: "Alva's Education Foundation", fareRupees: 10, capacity: 40, occupiedSeats: 31, availableSeats: 9 }
+    ]
+  },
+
+  // 17. Mangaluru to Puttur Express
+  {
+    id: 'route-55e',
+    routeNumber: '55E',
+    routeName: 'Mangaluru KSRTC Bejai ↔ Bantwal ↔ Puttur Non-Stop Express',
+    origin: 'Mangaluru',
+    destination: 'Puttur',
+    via: ['Bantwal Bypass', 'Mani Junction'],
+    distanceKm: 50.0,
+    estimatedDurationMin: 58,
+    fareRupees: 70,
+    status: 'Active',
+    operatingDays: 'Daily',
+    busType: 'Express',
+    associatedBusIds: ['bus-ka19-exp-5501'],
+    stops: [
+      { ...getStop('s-mng-bj'), sequence: 1, distanceFromStartKm: 0 },
+      { ...getStop('s-btw-bc'), sequence: 2, distanceFromStartKm: 24.0 },
+      { ...getStop('s-mni-1'), sequence: 3, distanceFromStartKm: 35.0 },
+      { ...getStop('s-ptr-bs'), sequence: 4, distanceFromStartKm: 50.0 }
+    ],
+    schedule: [
+      { tripId: 'trip-55e-01', departureTime: '07:15', arrivalTime: '08:13', busId: 'bus-ka19-exp-5501', busNumber: 'KA-19-F-5501', registrationNumber: 'KA-19-F-5501', busType: 'Express', operator: 'KSRTC Coastal Express', fareRupees: 70, capacity: 48, occupiedSeats: 24, availableSeats: 24 }
+    ]
+  },
+
+  // 18. Karkala to Belman to Kinnigoli to Mulki
+  {
+    id: 'route-66k',
+    routeNumber: '66K',
+    routeName: 'Karkala ↔ Belman ↔ Kinnigoli ↔ Mulki Coastal Express',
+    origin: 'Karkala',
+    destination: 'Mulki',
+    via: ['Belman Junction', 'Kinnigoli Bus Stand', 'Bappanadu Temple'],
+    distanceKm: 34.0,
+    estimatedDurationMin: 52,
+    fareRupees: 40,
+    status: 'Active',
+    operatingDays: 'Daily',
+    busType: 'Private Route',
+    associatedBusIds: ['bus-ka20-p-6601'],
+    stops: [
+      { ...getStop('s-krk-1'), sequence: 1, distanceFromStartKm: 0 },
+      { ...getStop('s-bel-1'), sequence: 2, distanceFromStartKm: 14.5 },
+      { ...getStop('s-kin-1'), sequence: 3, distanceFromStartKm: 24.5 },
+      { ...getStop('s-mul-1'), sequence: 4, distanceFromStartKm: 34.0 }
+    ],
+    schedule: [
+      { tripId: 'trip-66k-01', departureTime: '07:10', arrivalTime: '08:02', busId: 'bus-ka20-p-6601', busNumber: 'KA-20-B-6601', registrationNumber: 'KA-20-B-6601', busType: 'Private Route', operator: 'Padmaraj Roadlines', fareRupees: 40, capacity: 45, occupiedSeats: 20, availableSeats: 25 }
+    ]
+  },
+
+  // 19. Uppinangady to Nellyadi
+  {
+    id: 'route-71u',
+    routeNumber: '71U',
+    routeName: 'Uppinangady ↔ Nellyadi Rural Feeder',
+    origin: 'Uppinangady',
+    destination: 'Puttur',
+    via: ['Kemminje', 'Kavu'],
+    distanceKm: 22.5,
+    estimatedDurationMin: 35,
+    fareRupees: 28,
+    status: 'Active',
+    operatingDays: 'Daily',
+    busType: 'KSRTC Ordinary',
+    associatedBusIds: ['bus-ka19-7101'],
+    stops: [
+      { ...getStop('s-upp-1'), sequence: 1, distanceFromStartKm: 0 },
+      { ...getStop('s-kav-1'), sequence: 2, distanceFromStartKm: 14.0 },
+      { ...getStop('s-ptr-bs'), sequence: 3, distanceFromStartKm: 22.5 }
+    ],
+    schedule: [
+      { tripId: 'trip-71u-01', departureTime: '07:45', arrivalTime: '08:20', busId: 'bus-ka19-7101', busNumber: 'KA-19-F-7101', registrationNumber: 'KA-19-F-7101', busType: 'KSRTC Ordinary', operator: 'KSRTC Puttur Division', fareRupees: 28, capacity: 52, occupiedSeats: 18, availableSeats: 34 }
+    ]
+  },
+
+  // 20. Manipal to Moodbidri Intercollegiate Line
+  {
+    id: 'route-82m',
+    routeNumber: '82M',
+    routeName: "Manipal (MAHE) ↔ Karkala ↔ Moodbidri (Alva's)",
+    origin: 'Manipal',
+    destination: "Moodbidri (Alva's College)",
+    via: ['Tiger Circle', 'Hiriadka', 'Karkala', "Alva's Vidyagiri Gate"],
+    distanceKm: 52.0,
+    estimatedDurationMin: 72,
+    fareRupees: 58,
+    status: 'Active',
+    operatingDays: 'Daily',
+    busType: 'College Shuttle',
+    associatedBusIds: ['bus-ka20-8201'],
+    stops: [
+      { ...getStop('s-mnp-tc'), sequence: 1, distanceFromStartKm: 0 },
+      { ...getStop('s-hir-1'), sequence: 2, distanceFromStartKm: 10.5 },
+      { ...getStop('s-krk-1'), sequence: 3, distanceFromStartKm: 34.0 },
+      { ...getStop('s-alv-1'), sequence: 4, distanceFromStartKm: 50.2 },
+      { ...getStop('s-mbd-1'), sequence: 5, distanceFromStartKm: 52.0 }
+    ],
+    schedule: [
+      { tripId: 'trip-82m-01', departureTime: '07:15', arrivalTime: '08:27', busId: 'bus-ka20-8201', busNumber: 'KA-20-C-8201', registrationNumber: 'KA-20-C-8201', busType: 'College Shuttle', operator: 'Coastal Intercollegiate Transit', fareRupees: 58, capacity: 48, occupiedSeats: 26, availableSeats: 22 }
     ]
   }
 ];
 
+// ==========================================
+// 32 BUSES
+// ==========================================
 export const INITIAL_BUSES: Bus[] = [
-  // 1. KSRTC Route 14B Lead Bus
   {
     id: 'bus-ka19-1401',
     busNumber: 'KA-19-F-1401',
+    registrationNumber: 'KA-19-F-1401',
     busName: 'Kinnigoli Sarige (Trip 1)',
     busType: 'KSRTC Ordinary',
     operator: 'KSRTC Rural Gramina Sarige',
     routeId: 'route-14b',
-    routeName: '14B (Kinnigoli ↔ Moodbidri)',
+    routeNumber: '14B',
+    routeName: "14B (Kinnigoli ↔ Moodbidri Alva's)",
     origin: 'Kinnigoli',
-    destination: 'Moodbidri',
-    stops: ['Kinnigoli Bus Stand', 'Kateel Temple Junction', 'Bajpe Rural Cross', 'Ganjimutt Tech Zone', 'Alva\'s Vidyagiri Campus Gate', 'Moodbidri Bus Terminus'],
+    destination: "Moodbidri (Alva's College)",
+    stops: ['Kinnigoli Bus Stand', 'Kateel Temple Junction', 'Bajpe Rural Cross', 'Ganjimutt Tech Zone', "Alva's Vidyagiri Campus Gate", 'Moodbidri Bus Terminus'],
     capacity: 52,
+    occupiedSeats: 38,
     availableSeats: 14,
     status: 'On Time',
     currentLat: 13.0673,
@@ -532,27 +697,28 @@ export const INITIAL_BUSES: Bus[] = [
     nextStopName: 'Bajpe Rural Cross',
     distanceToNextStopKm: 7.8,
     remainingDistanceKm: 23.7,
-    etaNextStop: '07:35',
-    etaDestination: '08:10',
+    etaNextStop: '07:45',
+    etaDestination: '08:25',
     fareRupees: 35,
-    scheduledDeparture: '07:15',
-    scheduledArrival: '08:10',
+    scheduledDeparture: '07:30',
+    scheduledArrival: '08:25',
     totalDistanceKm: 28.5
   },
-
-  // 2. KSRTC Route 14B Peak Morning (Target of Scenario A cancellation simulation)
   {
     id: 'bus-ka19-1402',
     busNumber: 'KA-19-F-1402',
+    registrationNumber: 'KA-19-F-1402',
     busName: 'Moodbidri Student Peak Express',
     busType: 'KSRTC Ordinary',
     operator: 'KSRTC Rural Gramina Sarige',
     routeId: 'route-14b',
-    routeName: '14B (Kinnigoli ↔ Moodbidri Peak)',
+    routeNumber: '14B',
+    routeName: "14B (Kinnigoli ↔ Moodbidri Peak)",
     origin: 'Kinnigoli',
-    destination: 'Moodbidri',
-    stops: ['Kinnigoli Bus Stand', 'Kateel Temple Junction', 'Bajpe Rural Cross', 'Ganjimutt Tech Zone', 'Alva\'s Vidyagiri Campus Gate', 'Moodbidri Bus Terminus'],
+    destination: "Moodbidri (Alva's College)",
+    stops: ['Kinnigoli Bus Stand', 'Kateel Temple Junction', 'Bajpe Rural Cross', 'Ganjimutt Tech Zone', "Alva's Vidyagiri Campus Gate", 'Moodbidri Bus Terminus'],
     capacity: 52,
+    occupiedSeats: 52,
     availableSeats: 0,
     status: 'Delayed',
     currentLat: 13.0854,
@@ -575,20 +741,95 @@ export const INITIAL_BUSES: Bus[] = [
     scheduledArrival: '08:55',
     totalDistanceKm: 28.5
   },
-
-  // 3. KSRTC Route 31M Main City Line
+  {
+    id: 'bus-ka19-1403',
+    busNumber: 'KA-19-F-1403',
+    registrationNumber: 'KA-19-F-1403',
+    busName: 'Kinnigoli Morning Early Bird',
+    busType: 'KSRTC Ordinary',
+    operator: 'KSRTC Rural Gramina Sarige',
+    routeId: 'route-14b',
+    routeNumber: '14B',
+    routeName: "14B (Kinnigoli ↔ Moodbidri Early)",
+    origin: 'Kinnigoli',
+    destination: "Moodbidri (Alva's College)",
+    stops: ['Kinnigoli Bus Stand', 'Kateel Temple Junction', 'Bajpe Rural Cross', 'Ganjimutt Tech Zone', "Alva's Vidyagiri Campus Gate", 'Moodbidri Bus Terminus'],
+    capacity: 52,
+    occupiedSeats: 28,
+    availableSeats: 24,
+    status: 'On Time',
+    currentLat: 13.0298,
+    currentLng: 74.9450,
+    heading: 85,
+    speedKmH: 45,
+    lastUpdated: new Date().toISOString(),
+    currentStopIndex: 3,
+    delayMinutes: 0,
+    driverName: 'Praveen Poojary',
+    driverPhone: '+91 98455 22001',
+    isSimulatedGps: true,
+    nextStopName: "Alva's Vidyagiri Campus Gate",
+    distanceToNextStopKm: 7.1,
+    remainingDistanceKm: 9.1,
+    etaNextStop: '07:15',
+    etaDestination: '07:25',
+    fareRupees: 35,
+    scheduledDeparture: '06:30',
+    scheduledArrival: '07:25',
+    totalDistanceKm: 28.5
+  },
+  {
+    id: 'bus-ka19-1404',
+    busNumber: 'KA-19-F-1404',
+    registrationNumber: 'KA-19-F-1404',
+    busName: 'Kateel-Moodbidri Student Express',
+    busType: 'KSRTC Ordinary',
+    operator: 'KSRTC Rural Gramina Sarige',
+    routeId: 'route-14b',
+    routeNumber: '14B',
+    routeName: "14B (Kinnigoli ↔ Moodbidri Student)",
+    origin: 'Kinnigoli',
+    destination: "Moodbidri (Alva's College)",
+    stops: ['Kinnigoli Bus Stand', 'Kateel Temple Junction', 'Bajpe Rural Cross', 'Ganjimutt Tech Zone', "Alva's Vidyagiri Campus Gate", 'Moodbidri Bus Terminus'],
+    capacity: 52,
+    occupiedSeats: 34,
+    availableSeats: 18,
+    status: 'Approaching Stop',
+    currentLat: 13.0125,
+    currentLng: 74.8790,
+    heading: 90,
+    speedKmH: 38,
+    lastUpdated: new Date().toISOString(),
+    currentStopIndex: 2,
+    delayMinutes: 0,
+    driverName: 'Devdas Kulal',
+    driverPhone: '+91 97412 88440',
+    isSimulatedGps: true,
+    nextStopName: 'Ganjimutt Tech Zone',
+    distanceToNextStopKm: 6.8,
+    remainingDistanceKm: 15.9,
+    etaNextStop: '07:32',
+    etaDestination: '07:55',
+    fareRupees: 35,
+    scheduledDeparture: '07:00',
+    scheduledArrival: '07:55',
+    totalDistanceKm: 28.5
+  },
   {
     id: 'bus-ka19-3101',
     busNumber: 'KA-19-F-3101',
+    registrationNumber: 'KA-19-F-3101',
     busName: 'Mangaluru-Moodbidri Sarige 1',
     busType: 'KSRTC Ordinary',
     operator: 'KSRTC Rural Sarige',
     routeId: 'route-31m',
+    routeNumber: '31M',
     routeName: '31M (Mangaluru ↔ Moodbidri)',
     origin: 'Mangaluru',
     destination: 'Moodbidri',
-    stops: ['Mangaluru State Bank', 'Kulashekara', 'Vamanjoor (SJEC)', 'Gurupura Kaikamba', 'Ganjimutt', 'Mijar (Alvas)', 'Moodbidri'],
+    stops: ['Mangaluru State Bank', 'Kulashekara', 'Vamanjoor (SJEC)', 'Gurupura Kaikamba', 'Ganjimutt', 'Mijar (Alvas)', "Alva's Vidyagiri", 'Moodbidri'],
     capacity: 55,
+    occupiedSeats: 33,
     availableSeats: 22,
     status: 'On Time',
     currentLat: 12.9197,
@@ -611,20 +852,21 @@ export const INITIAL_BUSES: Bus[] = [
     scheduledArrival: '07:50',
     totalDistanceKm: 34.8
   },
-
-  // 4. KSRTC Route 31M Trip 2
   {
     id: 'bus-ka19-3102',
     busNumber: 'KA-19-F-3102',
+    registrationNumber: 'KA-19-F-3102',
     busName: 'Mangaluru-Moodbidri Sarige 2',
     busType: 'KSRTC Ordinary',
     operator: 'KSRTC Rural Sarige',
     routeId: 'route-31m',
+    routeNumber: '31M',
     routeName: '31M (Mangaluru ↔ Moodbidri Regular)',
     origin: 'Mangaluru',
     destination: 'Moodbidri',
-    stops: ['Mangaluru State Bank', 'Kulashekara', 'Vamanjoor (SJEC)', 'Gurupura Kaikamba', 'Ganjimutt', 'Mijar (Alvas)', 'Moodbidri'],
+    stops: ['Mangaluru State Bank', 'Kulashekara', 'Vamanjoor (SJEC)', 'Gurupura Kaikamba', 'Ganjimutt', 'Mijar (Alvas)', "Alva's Vidyagiri", 'Moodbidri'],
     capacity: 55,
+    occupiedSeats: 37,
     availableSeats: 18,
     status: 'Approaching Stop',
     currentLat: 12.8910,
@@ -634,7 +876,7 @@ export const INITIAL_BUSES: Bus[] = [
     lastUpdated: new Date().toISOString(),
     currentStopIndex: 1,
     delayMinutes: 2,
-    driverName: 'Sunil D\'Souza',
+    driverName: "Sunil D'Souza",
     driverPhone: '+91 97401 33445',
     isSimulatedGps: true,
     nextStopName: 'Vamanjoor (St. Joseph Engg Gate)',
@@ -647,20 +889,21 @@ export const INITIAL_BUSES: Bus[] = [
     scheduledArrival: '08:35',
     totalDistanceKm: 34.8
   },
-
-  // 5. Express Line KA-19-EXP-101 (Mangaluru to Udupi)
   {
     id: 'bus-ka19-exp-101',
     busNumber: 'KA-19-F-9101',
+    registrationNumber: 'KA-19-F-9101',
     busName: 'Coastal Rajahamsa Express',
     busType: 'Express',
     operator: 'KSRTC Coastal Express',
     routeId: 'route-1exp',
+    routeNumber: '1-EXP',
     routeName: '1-EXP (Mangaluru ↔ Surathkal ↔ Udupi)',
     origin: 'Mangaluru',
     destination: 'Udupi',
     stops: ['Mangaluru Bejai', 'Panambur', 'NITK Surathkal', 'Mukka', 'Mulki', 'Padubidri', 'Kaup', 'Udupi'],
     capacity: 48,
+    occupiedSeats: 22,
     availableSeats: 26,
     status: 'On Time',
     currentLat: 13.0076,
@@ -673,7 +916,7 @@ export const INITIAL_BUSES: Bus[] = [
     driverName: 'Anand Mendon',
     driverPhone: '+91 97312 66012',
     isSimulatedGps: true,
-    nextStopName: 'Mukka Srinivas Hospital',
+    nextStopName: 'Mukka Srinivas Hospital Gate',
     distanceToNextStopKm: 3.5,
     remainingDistanceKm: 39.5,
     etaNextStop: '06:58',
@@ -683,20 +926,21 @@ export const INITIAL_BUSES: Bus[] = [
     scheduledArrival: '07:45',
     totalDistanceKm: 58.0
   },
-
-  // 6. Express Line KA-19-EXP-102 (Trip 2)
   {
     id: 'bus-ka19-exp-102',
     busNumber: 'KA-19-F-9102',
+    registrationNumber: 'KA-19-F-9102',
     busName: 'Coastal Pride Express',
     busType: 'Express',
     operator: 'KSRTC Coastal Express',
     routeId: 'route-1exp',
+    routeNumber: '1-EXP',
     routeName: '1-EXP (Mangaluru ↔ Surathkal ↔ Udupi Peak)',
     origin: 'Mangaluru',
     destination: 'Udupi',
     stops: ['Mangaluru Bejai', 'Panambur', 'NITK Surathkal', 'Mukka', 'Mulki', 'Padubidri', 'Kaup', 'Udupi'],
     capacity: 48,
+    occupiedSeats: 37,
     availableSeats: 11,
     status: 'On Time',
     currentLat: 12.9510,
@@ -719,20 +963,21 @@ export const INITIAL_BUSES: Bus[] = [
     scheduledArrival: '08:30',
     totalDistanceKm: 58.0
   },
-
-  // 7. Route 22A Overcrowded Bus (Scenario C target)
   {
     id: 'bus-ka19-2201',
     busNumber: 'KA-19-F-2201',
+    registrationNumber: 'KA-19-F-2201',
     busName: 'Polali-Gurupura Gramina Sarige',
     busType: 'KSRTC Ordinary',
     operator: 'Dakshina Kannada District Sarige',
     routeId: 'route-22a',
+    routeNumber: '22A',
     routeName: '22A (Gurupura ↔ Vamanjoor SJEC)',
     origin: 'Gurupura',
     destination: 'Vamanjoor',
     stops: ['Gurupura Kaikamba', 'Polali Dwara Stop', 'Pilikula Heritage Gate', 'Vamanjoor (SJEC)'],
     capacity: 48,
+    occupiedSeats: 48,
     availableSeats: 0,
     status: 'Full Capacity',
     currentLat: 12.9350,
@@ -755,20 +1000,21 @@ export const INITIAL_BUSES: Bus[] = [
     scheduledArrival: '08:17',
     totalDistanceKm: 14.2
   },
-
-  // 8. Route 22A Trip 2
   {
     id: 'bus-ka19-2202',
     busNumber: 'KA-19-F-2202',
+    registrationNumber: 'KA-19-F-2202',
     busName: 'Pilikula-SJEC Student Shuttle',
     busType: 'KSRTC Ordinary',
     operator: 'Dakshina Kannada District Sarige',
     routeId: 'route-22a',
-    routeName: '22A (Gurupura ↔ Vamanjoor Late Morning)',
+    routeNumber: '22A',
+    routeName: '22A (Gurupura ↔ Vamanjoor)',
     origin: 'Gurupura',
     destination: 'Vamanjoor',
     stops: ['Gurupura Kaikamba', 'Polali Dwara Stop', 'Pilikula Heritage Gate', 'Vamanjoor (SJEC)'],
     capacity: 48,
+    occupiedSeats: 29,
     availableSeats: 19,
     status: 'On Time',
     currentLat: 12.9463,
@@ -791,20 +1037,21 @@ export const INITIAL_BUSES: Bus[] = [
     scheduledArrival: '09:02',
     totalDistanceKm: 14.2
   },
-
-  // 9. Route 42U Vishal Coastal Private Bus (Udupi to Karkala)
   {
     id: 'bus-ka20-p-4201',
     busNumber: 'KA-20-B-4201',
+    registrationNumber: 'KA-20-B-4201',
     busName: 'Vishal Star Express',
     busType: 'Private Route',
     operator: 'Vishal Coastal Motors',
     routeId: 'route-42u',
+    routeNumber: '42U',
     routeName: '42U (Udupi ↔ Manipal ↔ Karkala)',
     origin: 'Udupi',
     destination: 'Karkala',
     stops: ['Udupi Service Bus Stand', 'Manipal Tiger Circle', 'Hiriadka Bus Stand', 'Belman Junction', 'Karkala Bus Stand'],
     capacity: 45,
+    occupiedSeats: 29,
     availableSeats: 16,
     status: 'On Time',
     currentLat: 13.3525,
@@ -827,20 +1074,21 @@ export const INITIAL_BUSES: Bus[] = [
     scheduledArrival: '07:55',
     totalDistanceKm: 38.2
   },
-
-  // 10. Route 42U Canara Star Lines (Trip 2)
   {
     id: 'bus-ka20-p-4202',
     busNumber: 'KA-20-B-4202',
+    registrationNumber: 'KA-20-B-4202',
     busName: 'Canara Star Regular',
     busType: 'Private Route',
     operator: 'Canara Star Lines',
     routeId: 'route-42u',
+    routeNumber: '42U',
     routeName: '42U (Udupi ↔ Karkala Morning)',
     origin: 'Udupi',
     destination: 'Karkala',
     stops: ['Udupi Service Bus Stand', 'Manipal Tiger Circle', 'Hiriadka Bus Stand', 'Belman Junction', 'Karkala Bus Stand'],
     capacity: 45,
+    occupiedSeats: 37,
     availableSeats: 8,
     status: 'Approaching Stop',
     currentLat: 13.3409,
@@ -863,20 +1111,21 @@ export const INITIAL_BUSES: Bus[] = [
     scheduledArrival: '08:40',
     totalDistanceKm: 38.2
   },
-
-  // 11. Route 16K KSRTC Karkala-Moodbidri Alva's Express
   {
     id: 'bus-ka20-k-1601',
     busNumber: 'KA-20-F-1601',
-    busName: 'Alva\'s Vidyagiri Morning Express',
+    registrationNumber: 'KA-20-F-1601',
+    busName: "Alva's Vidyagiri Morning Express",
     busType: 'KSRTC Ordinary',
     operator: 'KSRTC Karkala Depot',
     routeId: 'route-16k',
+    routeNumber: '16K',
     routeName: '16K (Karkala ↔ Moodbidri Vidyagiri)',
     origin: 'Karkala',
-    destination: 'Moodbidri',
-    stops: ['Karkala Bus Stand', 'Miyar Village Cross', 'Pojekallu Gate', 'Alva\'s Vidyagiri Campus Gate', 'Moodbidri Bus Terminus'],
+    destination: "Moodbidri (Alva's College)",
+    stops: ['Karkala Bus Stand', 'Miyar Village Cross', "Alva's Vidyagiri Campus Gate", 'Moodbidri Bus Terminus'],
     capacity: 50,
+    occupiedSeats: 26,
     availableSeats: 24,
     status: 'On Time',
     currentLat: 13.1650,
@@ -889,8 +1138,8 @@ export const INITIAL_BUSES: Bus[] = [
     driverName: 'Gopal Devadiga',
     driverPhone: '+91 94812 44781',
     isSimulatedGps: true,
-    nextStopName: 'Pojekallu Gate',
-    distanceToNextStopKm: 6.3,
+    nextStopName: "Alva's Vidyagiri Campus Gate",
+    distanceToNextStopKm: 10.3,
     remainingDistanceKm: 11.8,
     etaNextStop: '07:33',
     etaDestination: '07:48',
@@ -899,20 +1148,21 @@ export const INITIAL_BUSES: Bus[] = [
     scheduledArrival: '07:48',
     totalDistanceKm: 18.0
   },
-
-  // 12. Route 16K Trip 2
   {
     id: 'bus-ka20-k-1602',
     busNumber: 'KA-20-F-1602',
+    registrationNumber: 'KA-20-F-1602',
     busName: 'Karkala-Moodbidri Student Sarige 2',
     busType: 'KSRTC Ordinary',
     operator: 'KSRTC Karkala Depot',
     routeId: 'route-16k',
+    routeNumber: '16K',
     routeName: '16K (Karkala ↔ Moodbidri Student Regular)',
     origin: 'Karkala',
-    destination: 'Moodbidri',
-    stops: ['Karkala Bus Stand', 'Miyar Village Cross', 'Pojekallu Gate', 'Alva\'s Vidyagiri Campus Gate', 'Moodbidri Bus Terminus'],
+    destination: "Moodbidri (Alva's College)",
+    stops: ['Karkala Bus Stand', 'Miyar Village Cross', "Alva's Vidyagiri Campus Gate", 'Moodbidri Bus Terminus'],
     capacity: 50,
+    occupiedSeats: 35,
     availableSeats: 15,
     status: 'On Time',
     currentLat: 13.2130,
@@ -935,20 +1185,21 @@ export const INITIAL_BUSES: Bus[] = [
     scheduledArrival: '08:28',
     totalDistanceKm: 18.0
   },
-
-  // 13. Route 24P KSRTC Puttur Division (Mangaluru to Puttur)
   {
     id: 'bus-ka19-p-2401',
     busNumber: 'KA-19-F-2401',
+    registrationNumber: 'KA-19-F-2401',
     busName: 'Puttur Gramina Sarige 1',
     busType: 'KSRTC Ordinary',
     operator: 'KSRTC Puttur Division',
     routeId: 'route-24p',
+    routeNumber: '24P',
     routeName: '24P (Mangaluru ↔ Bantwal ↔ Puttur)',
     origin: 'Mangaluru',
     destination: 'Puttur',
     stops: ['Mangaluru State Bank', 'Padil', 'Farangipete', 'Bantwal BC Road', 'Mani Junction', 'Puttur Darbe', 'Puttur KSRTC Stand'],
     capacity: 55,
+    occupiedSeats: 34,
     availableSeats: 21,
     status: 'On Time',
     currentLat: 12.8780,
@@ -971,20 +1222,21 @@ export const INITIAL_BUSES: Bus[] = [
     scheduledArrival: '07:55',
     totalDistanceKm: 52.4
   },
-
-  // 14. Route 24P Trip 2
   {
     id: 'bus-ka19-p-2402',
     busNumber: 'KA-19-F-2402',
+    registrationNumber: 'KA-19-F-2402',
     busName: 'Puttur-Mangaluru College Express',
     busType: 'KSRTC Ordinary',
     operator: 'KSRTC Puttur Division',
     routeId: 'route-24p',
+    routeNumber: '24P',
     routeName: '24P (Mangaluru ↔ Bantwal ↔ Puttur Morning)',
     origin: 'Mangaluru',
     destination: 'Puttur',
     stops: ['Mangaluru State Bank', 'Padil', 'Farangipete', 'Bantwal BC Road', 'Mani Junction', 'Puttur Darbe', 'Puttur KSRTC Stand'],
     capacity: 55,
+    occupiedSeats: 42,
     availableSeats: 13,
     status: 'On Time',
     currentLat: 12.8690,
@@ -1007,35 +1259,36 @@ export const INITIAL_BUSES: Bus[] = [
     scheduledArrival: '08:40',
     totalDistanceKm: 52.4
   },
-
-  // 15. Route 77B Belthangady Depot (Bantwal to Ujire SDM College)
   {
     id: 'bus-ka19-b-7701',
     busNumber: 'KA-19-F-7701',
+    registrationNumber: 'KA-19-F-7701',
     busName: 'SDM College Rural Sarige 1',
     busType: 'KSRTC Ordinary',
     operator: 'KSRTC Belthangady Depot',
     routeId: 'route-77b',
+    routeNumber: '77B',
     routeName: '77B (Bantwal BC Road ↔ Belthangady ↔ Ujire SDM)',
     origin: 'Bantwal',
     destination: 'Belthangady',
-    stops: ['Bantwal BC Road', 'Punjalkatte', 'Madanthyar', 'Belthangady Bus Stand', 'Ujire (SDM College)'],
+    stops: ['Bantwal BC Road', 'Farangipete', 'Belthangady Bus Stand', 'Ujire (SDM College)'],
     capacity: 52,
+    occupiedSeats: 35,
     availableSeats: 17,
     status: 'On Time',
-    currentLat: 12.9680,
-    currentLng: 75.1850,
+    currentLat: 12.8780,
+    currentLng: 74.9350,
     heading: 65,
     speedKmH: 45,
     lastUpdated: new Date().toISOString(),
-    currentStopIndex: 2,
+    currentStopIndex: 1,
     delayMinutes: 0,
     driverName: 'Santhosh Hegde',
     driverPhone: '+91 94810 55223',
     isSimulatedGps: true,
     nextStopName: 'Belthangady Bus Stand',
-    distanceToNextStopKm: 10.5,
-    remainingDistanceKm: 21.0,
+    distanceToNextStopKm: 18.0,
+    remainingDistanceKm: 28.2,
     etaNextStop: '07:48',
     etaDestination: '08:05',
     fareRupees: 48,
@@ -1043,20 +1296,21 @@ export const INITIAL_BUSES: Bus[] = [
     scheduledArrival: '08:05',
     totalDistanceKm: 42.0
   },
-
-  // 16. Route 77B Trip 2
   {
     id: 'bus-ka19-b-7702',
     busNumber: 'KA-19-F-7702',
+    registrationNumber: 'KA-19-F-7702',
     busName: 'Belthangady Student Sarige 2',
     busType: 'KSRTC Ordinary',
     operator: 'KSRTC Belthangady Depot',
     routeId: 'route-77b',
+    routeNumber: '77B',
     routeName: '77B (Bantwal ↔ Ujire SDM Regular)',
     origin: 'Bantwal',
     destination: 'Belthangady',
-    stops: ['Bantwal BC Road', 'Punjalkatte', 'Madanthyar', 'Belthangady Bus Stand', 'Ujire (SDM College)'],
+    stops: ['Bantwal BC Road', 'Farangipete', 'Belthangady Bus Stand', 'Ujire (SDM College)'],
     capacity: 52,
+    occupiedSeats: 24,
     availableSeats: 28,
     status: 'On Time',
     currentLat: 12.8931,
@@ -1069,7 +1323,7 @@ export const INITIAL_BUSES: Bus[] = [
     driverName: 'Naveen Kumar',
     driverPhone: '+91 97413 88990',
     isSimulatedGps: true,
-    nextStopName: 'Punjalkatte Grama Cross',
+    nextStopName: 'Farangipete Rural Stop',
     distanceToNextStopKm: 13.8,
     remainingDistanceKm: 42.0,
     etaNextStop: '08:24',
@@ -1079,20 +1333,21 @@ export const INITIAL_BUSES: Bus[] = [
     scheduledArrival: '09:00',
     totalDistanceKm: 42.0
   },
-
-  // 17. Route 88U Durgamba Private Route Bus (Puttur to Uppinangady)
   {
     id: 'bus-ka19-u-8801',
     busNumber: 'KA-19-B-8801',
+    registrationNumber: 'KA-19-B-8801',
     busName: 'Durgamba Sangam Express',
     busType: 'Private Route',
     operator: 'Durgamba Motor Service',
     routeId: 'route-88u',
+    routeNumber: '88U',
     routeName: '88U (Puttur ↔ Uppinangady)',
     origin: 'Puttur',
     destination: 'Uppinangady',
     stops: ['Puttur KSRTC Bus Stand', 'Kavu Grama Cross', 'Uppinangady Sangam'],
     capacity: 40,
+    occupiedSeats: 28,
     availableSeats: 12,
     status: 'On Time',
     currentLat: 12.8020,
@@ -1115,20 +1370,21 @@ export const INITIAL_BUSES: Bus[] = [
     scheduledArrival: '08:05',
     totalDistanceKm: 22.5
   },
-
-  // 18. Route 31C KSRTC Feeder (Kateel to Bajpe Airport Hub)
   {
-    id: 'bus-ka19-3101-f',
+    id: 'bus-ka19-3111',
     busNumber: 'KA-19-F-3111',
+    registrationNumber: 'KA-19-F-3111',
     busName: 'Kateel-Bajpe Rural Feeder',
     busType: 'KSRTC Ordinary',
     operator: 'KSRTC Rural Feeder',
     routeId: 'route-31c',
+    routeNumber: '31C',
     routeName: '31C (Kateel ↔ Bajpe Hub)',
     origin: 'Kateel',
     destination: 'Bajpe',
     stops: ['Kateel Temple Junction', 'Yekkar Grama Panchayat', 'Bajpe Bus Station'],
     capacity: 45,
+    occupiedSeats: 23,
     availableSeats: 22,
     status: 'Approaching Stop',
     currentLat: 13.0310,
@@ -1151,20 +1407,21 @@ export const INITIAL_BUSES: Bus[] = [
     scheduledArrival: '07:52',
     totalDistanceKm: 12.0
   },
-
-  // 19. Route 45F Moodbidri Janatha Shuttle (Bajpe to Moodbidri)
   {
     id: 'bus-ka19-4501',
     busNumber: 'KA-19-F-4501',
+    registrationNumber: 'KA-19-F-4501',
     busName: 'Janatha Feeder Shuttle',
     busType: 'Private Route',
     operator: 'Moodbidri Janatha Shuttle',
     routeId: 'route-45f',
-    routeName: '45F (Bajpe ↔ Moodbidri)',
+    routeNumber: '45F',
+    routeName: "45F (Bajpe ↔ Moodbidri Alva's)",
     origin: 'Bajpe',
-    destination: 'Moodbidri',
-    stops: ['Bajpe Bus Station', 'Pojekallu Cross', 'Mijar Alvas Engineering', 'Moodbidri Bus Terminus'],
+    destination: "Moodbidri (Alva's College)",
+    stops: ['Bajpe Bus Station', 'Pojekallu Cross', 'Mijar Alvas Engineering', "Alva's Vidyagiri Campus Gate", 'Moodbidri Bus Terminus'],
     capacity: 40,
+    occupiedSeats: 22,
     availableSeats: 18,
     status: 'On Time',
     currentLat: 13.0150,
@@ -1187,20 +1444,21 @@ export const INITIAL_BUSES: Bus[] = [
     scheduledArrival: '08:20',
     totalDistanceKm: 19.4
   },
-
-  // 20. Route 60B College Shuttle (Bantwal to Canara Engg & SJEC)
   {
     id: 'bus-ka19-6001',
     busNumber: 'KA-19-F-6001',
+    registrationNumber: 'KA-19-F-6001',
     busName: 'Canara-SJEC Intercollegiate Shuttle',
     busType: 'College Shuttle',
     operator: 'Bantwal Taluk Education Bus',
     routeId: 'route-60b',
+    routeNumber: '60B',
     routeName: '60B (Bantwal ↔ Canara Engg ↔ SJEC)',
     origin: 'Bantwal',
     destination: 'Vamanjoor',
     stops: ['Bantwal BC Road', 'Benjanapadavu Canara Engg', 'Farangipete', 'Vamanjoor (SJEC)'],
     capacity: 50,
+    occupiedSeats: 31,
     availableSeats: 19,
     status: 'On Time',
     currentLat: 12.8990,
@@ -1223,20 +1481,21 @@ export const INITIAL_BUSES: Bus[] = [
     scheduledArrival: '08:18',
     totalDistanceKm: 18.2
   },
-
-  // 21. Route 18C Shared Feeder Maxicab (Mulki to Kateel)
   {
     id: 'bus-ka19-sh-1801',
     busNumber: 'KA-19-MC-1801',
+    registrationNumber: 'KA-19-MC-1801',
     busName: 'Gramina Cruiser Shared Feeder 1',
     busType: 'Shared Feeder',
     operator: 'Gramina Maxicab Union',
     routeId: 'route-18c',
+    routeNumber: '18C',
     routeName: '18C (Mulki ↔ Kinnigoli ↔ Kateel Feeder)',
     origin: 'Mulki',
     destination: 'Kateel',
     stops: ['Mulki Town Bus Stand', 'Bappanadu Temple', 'Kinnigoli Bus Stand', 'Kateel Temple Junction'],
     capacity: 12,
+    occupiedSeats: 7,
     availableSeats: 5,
     status: 'On Time',
     currentLat: 13.0940,
@@ -1259,20 +1518,21 @@ export const INITIAL_BUSES: Bus[] = [
     scheduledArrival: '07:28',
     totalDistanceKm: 14.5
   },
-
-  // 22. Route 92M KSRTC (Moodbidri to Belthangady)
   {
     id: 'bus-ka19-9201',
     busNumber: 'KA-19-F-9201',
+    registrationNumber: 'KA-19-F-9201',
     busName: 'Gommateshwara Gramina Express',
     busType: 'KSRTC Ordinary',
     operator: 'KSRTC Rural Gramina Sarige',
     routeId: 'route-92m',
+    routeNumber: '92M',
     routeName: '92M (Moodbidri ↔ Venur ↔ Belthangady)',
     origin: 'Moodbidri',
     destination: 'Belthangady',
     stops: ['Moodbidri Bus Terminus', 'Venur Gommateshwara Circle', 'Guruvayanakere Cross', 'Belthangady Bus Stand'],
     capacity: 52,
+    occupiedSeats: 21,
     availableSeats: 31,
     status: 'On Time',
     currentLat: 13.0480,
@@ -1295,20 +1555,21 @@ export const INITIAL_BUSES: Bus[] = [
     scheduledArrival: '08:05',
     totalDistanceKm: 32.0
   },
-
-  // 23. Route 11S NITK Campus Link (Surathkal to Bajpe Airport)
   {
     id: 'bus-ka19-nitk-1101',
     busNumber: 'KA-19-C-1101',
+    registrationNumber: 'KA-19-C-1101',
     busName: 'NITK Regional Student Bus',
     busType: 'College Shuttle',
     operator: 'NITK Student Campus Express',
     routeId: 'route-11s',
+    routeNumber: '11S',
     routeName: '11S (NITK Surathkal ↔ Kinnigoli ↔ Bajpe)',
     origin: 'Surathkal',
     destination: 'Bajpe',
     stops: ['NITK Surathkal', 'Haleyangadi', 'Kinnigoli', 'Kateel', 'Bajpe'],
     capacity: 45,
+    occupiedSeats: 25,
     availableSeats: 20,
     status: 'On Time',
     currentLat: 13.0580,
@@ -1331,20 +1592,21 @@ export const INITIAL_BUSES: Bus[] = [
     scheduledArrival: '08:05',
     totalDistanceKm: 26.8
   },
-
-  // 24. Alva's Campus Shuttle 1
   {
     id: 'bus-alv-01',
     busNumber: 'KA-19-ALV-01',
-    busName: 'Alva\'s Vidyagiri Campus Shuttle 1',
+    registrationNumber: 'KA-19-ALV-01',
+    busName: "Alva's Vidyagiri Campus Shuttle 1",
     busType: 'College Shuttle',
-    operator: 'Alva\'s Education Foundation',
+    operator: "Alva's Education Foundation",
     routeId: 'route-alv-sh',
+    routeNumber: 'ALV-SH',
     routeName: 'ALV-SH (Vidyagiri ↔ Engineering ↔ Shobhavana)',
     origin: 'Moodbidri',
-    destination: 'Mijar',
-    stops: ['Moodbidri Bus Terminus', 'Alva\'s Vidyagiri Campus Gate', 'Alva\'s Engineering Block', 'Mijar Alvas Engineering'],
+    destination: "Moodbidri (Alva's College)",
+    stops: ['Moodbidri Bus Terminus', "Alva's Vidyagiri Campus Gate", "Alva's Engineering Block", 'Mijar Alvas Engineering'],
     capacity: 40,
+    occupiedSeats: 25,
     availableSeats: 15,
     status: 'On Time',
     currentLat: 13.0650,
@@ -1357,7 +1619,7 @@ export const INITIAL_BUSES: Bus[] = [
     driverName: 'Praveen Alva',
     driverPhone: '+91 99002 88441',
     isSimulatedGps: true,
-    nextStopName: 'Alva\'s Engineering Block',
+    nextStopName: "Alva's Engineering Block",
     distanceToNextStopKm: 2.6,
     remainingDistanceKm: 6.3,
     etaNextStop: '07:38',
@@ -1367,20 +1629,21 @@ export const INITIAL_BUSES: Bus[] = [
     scheduledArrival: '07:48',
     totalDistanceKm: 8.5
   },
-
-  // 25. Alva's Campus Shuttle 2
   {
     id: 'bus-alv-02',
     busNumber: 'KA-19-ALV-02',
-    busName: 'Alva\'s Vidyagiri Campus Shuttle 2',
+    registrationNumber: 'KA-19-ALV-02',
+    busName: "Alva's Vidyagiri Campus Shuttle 2",
     busType: 'College Shuttle',
-    operator: 'Alva\'s Education Foundation',
+    operator: "Alva's Education Foundation",
     routeId: 'route-alv-sh',
+    routeNumber: 'ALV-SH',
     routeName: 'ALV-SH (Vidyagiri ↔ Shobhavana Regular)',
     origin: 'Moodbidri',
-    destination: 'Mijar',
-    stops: ['Moodbidri Bus Terminus', 'Alva\'s Vidyagiri Campus Gate', 'Alva\'s Engineering Block', 'Mijar Alvas Engineering'],
+    destination: "Moodbidri (Alva's College)",
+    stops: ['Moodbidri Bus Terminus', "Alva's Vidyagiri Campus Gate", "Alva's Engineering Block", 'Mijar Alvas Engineering'],
     capacity: 40,
+    occupiedSeats: 31,
     availableSeats: 9,
     status: 'On Time',
     currentLat: 13.0722,
@@ -1393,7 +1656,7 @@ export const INITIAL_BUSES: Bus[] = [
     driverName: 'Girish Shetty',
     driverPhone: '+91 97410 77221',
     isSimulatedGps: true,
-    nextStopName: 'Alva\'s Vidyagiri Campus Gate',
+    nextStopName: "Alva's Vidyagiri Campus Gate",
     distanceToNextStopKm: 2.2,
     remainingDistanceKm: 8.5,
     etaNextStop: '08:06',
@@ -1403,20 +1666,21 @@ export const INITIAL_BUSES: Bus[] = [
     scheduledArrival: '08:18',
     totalDistanceKm: 8.5
   },
-
-  // 26. KSRTC Relief Standby (Allocated by Admin during Scenario B / 1-click allocation)
   {
     id: 'bus-ka19-9901',
     busNumber: 'KA-19-F-9901',
+    registrationNumber: 'KA-19-F-9901',
     busName: 'KSRTC Special Relief Shuttle',
     busType: 'KSRTC Ordinary',
     operator: 'KSRTC Special Student Express',
     routeId: 'route-14b',
-    routeName: '14B (Relief Shuttle)',
+    routeNumber: '14B',
+    routeName: "14B (Kinnigoli ↔ Moodbidri Relief)",
     origin: 'Kinnigoli',
-    destination: 'Moodbidri',
-    stops: ['Kinnigoli Bus Stand', 'Kateel Temple Junction', 'Bajpe Rural Cross', 'Ganjimutt Tech Zone', 'Alva\'s Vidyagiri Campus Gate', 'Moodbidri Bus Terminus'],
+    destination: "Moodbidri (Alva's College)",
+    stops: ['Kinnigoli Bus Stand', 'Kateel Temple Junction', 'Bajpe Rural Cross', 'Ganjimutt Tech Zone', "Alva's Vidyagiri Campus Gate", 'Moodbidri Bus Terminus'],
     capacity: 35,
+    occupiedSeats: 0,
     availableSeats: 35,
     status: 'On Time',
     currentLat: 13.0854,
@@ -1438,8 +1702,216 @@ export const INITIAL_BUSES: Bus[] = [
     scheduledDeparture: '07:35',
     scheduledArrival: '08:25',
     totalDistanceKm: 28.5
+  },
+  {
+    id: 'bus-ka19-exp-5501',
+    busNumber: 'KA-19-F-5501',
+    registrationNumber: 'KA-19-F-5501',
+    busName: 'Puttur Non-Stop Express',
+    busType: 'Express',
+    operator: 'KSRTC Coastal Express',
+    routeId: 'route-55e',
+    routeNumber: '55E',
+    routeName: '55E (Mangaluru ↔ Bantwal ↔ Puttur Express)',
+    origin: 'Mangaluru',
+    destination: 'Puttur',
+    stops: ['Mangaluru KSRTC Bejai', 'Bantwal BC Road', 'Mani Junction', 'Puttur KSRTC Stand'],
+    capacity: 48,
+    occupiedSeats: 24,
+    availableSeats: 24,
+    status: 'On Time',
+    currentLat: 12.8850,
+    currentLng: 74.8480,
+    heading: 100,
+    speedKmH: 55,
+    lastUpdated: new Date().toISOString(),
+    currentStopIndex: 0,
+    delayMinutes: 0,
+    driverName: 'Raghavendra Bhat',
+    driverPhone: '+91 98450 33112',
+    isSimulatedGps: true,
+    nextStopName: 'Bantwal BC Road Bus Stand',
+    distanceToNextStopKm: 24.0,
+    remainingDistanceKm: 50.0,
+    etaNextStop: '07:45',
+    etaDestination: '08:13',
+    fareRupees: 70,
+    scheduledDeparture: '07:15',
+    scheduledArrival: '08:13',
+    totalDistanceKm: 50.0
+  },
+  {
+    id: 'bus-ka20-p-6601',
+    busNumber: 'KA-20-B-6601',
+    registrationNumber: 'KA-20-B-6601',
+    busName: 'Padmaraj Coastal Express',
+    busType: 'Private Route',
+    operator: 'Padmaraj Roadlines',
+    routeId: 'route-66k',
+    routeNumber: '66K',
+    routeName: '66K (Karkala ↔ Kinnigoli ↔ Mulki)',
+    origin: 'Karkala',
+    destination: 'Mulki',
+    stops: ['Karkala Bus Stand', 'Belman Junction', 'Kinnigoli Bus Stand', 'Mulki Town Bus Stand'],
+    capacity: 45,
+    occupiedSeats: 20,
+    availableSeats: 25,
+    status: 'On Time',
+    currentLat: 13.2510,
+    currentLng: 74.9210,
+    heading: 230,
+    speedKmH: 44,
+    lastUpdated: new Date().toISOString(),
+    currentStopIndex: 1,
+    delayMinutes: 0,
+    driverName: 'Karthik Rao',
+    driverPhone: '+91 97410 44321',
+    isSimulatedGps: true,
+    nextStopName: 'Kinnigoli Bus Stand',
+    distanceToNextStopKm: 10.0,
+    remainingDistanceKm: 19.5,
+    etaNextStop: '07:35',
+    etaDestination: '08:02',
+    fareRupees: 40,
+    scheduledDeparture: '07:10',
+    scheduledArrival: '08:02',
+    totalDistanceKm: 34.0
+  },
+  {
+    id: 'bus-ka19-7101',
+    busNumber: 'KA-19-F-7101',
+    registrationNumber: 'KA-19-F-7101',
+    busName: 'Uppinangady Rural Sarige',
+    busType: 'KSRTC Ordinary',
+    operator: 'KSRTC Puttur Division',
+    routeId: 'route-71u',
+    routeNumber: '71U',
+    routeName: '71U (Uppinangady ↔ Puttur)',
+    origin: 'Uppinangady',
+    destination: 'Puttur',
+    stops: ['Uppinangady Sangam', 'Kavu Grama Cross', 'Puttur KSRTC Bus Stand'],
+    capacity: 52,
+    occupiedSeats: 18,
+    availableSeats: 34,
+    status: 'On Time',
+    currentLat: 12.8350,
+    currentLng: 75.2890,
+    heading: 210,
+    speedKmH: 40,
+    lastUpdated: new Date().toISOString(),
+    currentStopIndex: 0,
+    delayMinutes: 0,
+    driverName: 'Babu Naik',
+    driverPhone: '+91 94480 77123',
+    isSimulatedGps: true,
+    nextStopName: 'Kavu Grama Cross',
+    distanceToNextStopKm: 14.0,
+    remainingDistanceKm: 22.5,
+    etaNextStop: '08:02',
+    etaDestination: '08:20',
+    fareRupees: 28,
+    scheduledDeparture: '07:45',
+    scheduledArrival: '08:20',
+    totalDistanceKm: 22.5
+  },
+  {
+    id: 'bus-ka20-8201',
+    busNumber: 'KA-20-C-8201',
+    registrationNumber: 'KA-20-C-8201',
+    busName: 'Manipal-Alvas Intercollegiate Express',
+    busType: 'College Shuttle',
+    operator: 'Coastal Intercollegiate Transit',
+    routeId: 'route-82m',
+    routeNumber: '82M',
+    routeName: "82M (Manipal MAHE ↔ Karkala ↔ Alva's)",
+    origin: 'Manipal',
+    destination: "Moodbidri (Alva's College)",
+    stops: ['Manipal Tiger Circle', 'Hiriadka Bus Stand', 'Karkala Bus Stand', "Alva's Vidyagiri Campus Gate", 'Moodbidri Bus Terminus'],
+    capacity: 48,
+    occupiedSeats: 26,
+    availableSeats: 22,
+    status: 'On Time',
+    currentLat: 13.3360,
+    currentLng: 74.8720,
+    heading: 130,
+    speedKmH: 48,
+    lastUpdated: new Date().toISOString(),
+    currentStopIndex: 1,
+    delayMinutes: 0,
+    driverName: 'Sudhir Nayak',
+    driverPhone: '+91 98451 99002',
+    isSimulatedGps: true,
+    nextStopName: 'Karkala Bus Stand (Bandimath)',
+    distanceToNextStopKm: 23.5,
+    remainingDistanceKm: 41.5,
+    etaNextStop: '07:50',
+    etaDestination: '08:27',
+    fareRupees: 58,
+    scheduledDeparture: '07:15',
+    scheduledArrival: '08:27',
+    totalDistanceKm: 52.0
   }
 ];
+
+// ==========================================
+// 105 PASSENGER RECORDS (Task 2 Requirement)
+// ==========================================
+export const INITIAL_PASSENGERS: PassengerRecord[] = Array.from({ length: 105 }).map((_, i) => {
+  const tripNum = (i % 8) + 1;
+  const tripId = `trip-14b-0${tripNum}`;
+  const seatNum = (i % 50) + 1;
+  const names = [
+    'Ananya Rao', 'Karthik Prabhu', 'Meghana Bhat', 'Praveen Kotian', 'Deepak Salian',
+    'Shreya Shenoy', 'Naveen Kumar', 'Divya Shetty', 'Rohan D Souza', 'Preethi Alva',
+    'Akshay Kulal', 'Pooja Hegde', 'Vikas Gowda', 'Bhavya Poojary', 'Sachin Nayak',
+    'Swathi Naik', 'Manish Devadiga', 'Rashmi Mendon', 'Pradeep Poojary', 'Ankitha Rai'
+  ];
+  const name = names[i % names.length];
+  return {
+    id: `pass-${String(i + 1).padStart(3, '0')}`,
+    tripId,
+    busNumber: `KA-19-F-140${(i % 4) + 1}`,
+    studentId: `std-${100 + i}`,
+    studentName: `${name} #${i + 1}`,
+    seatNumber: seatNum,
+    boardingStop: i % 2 === 0 ? 'Kinnigoli Bus Stand' : 'Kateel Temple Junction',
+    destinationStop: i % 3 === 0 ? "Alva's Vidyagiri Campus Gate" : 'Moodbidri Bus Terminus',
+    farePaid: 35,
+    bookingDate: '2026-11-13',
+    status: i % 15 === 0 ? 'CANCELLED' : i % 3 === 0 ? 'BOARDED' : 'CONFIRMED'
+  };
+});
+
+// ==========================================
+// FLATTENED TRIPS
+// ==========================================
+export const INITIAL_TRIPS: Trip[] = INITIAL_ROUTES.flatMap(r =>
+  r.schedule.map(s => ({
+    id: s.tripId,
+    tripNumber: s.tripId.toUpperCase(),
+    routeId: r.id,
+    routeNumber: r.routeNumber,
+    routeName: r.routeName,
+    busId: s.busId,
+    busNumber: s.busNumber,
+    registrationNumber: s.registrationNumber,
+    operator: s.operator,
+    busType: s.busType,
+    origin: r.origin,
+    destination: r.destination,
+    departureTime: s.departureTime,
+    arrivalTime: s.arrivalTime,
+    durationMin: r.estimatedDurationMin,
+    totalDistanceKm: r.distanceKm,
+    fareRupees: s.fareRupees,
+    capacity: s.capacity,
+    occupiedSeats: s.occupiedSeats,
+    availableSeats: s.availableSeats,
+    status: s.availableSeats <= 0 ? 'Full Capacity' : 'On Time',
+    operatingDays: r.operatingDays,
+    stops: r.stops.map(st => st.name)
+  }))
+);
 
 export const INITIAL_REQUESTS: TravelRequest[] = [
   {

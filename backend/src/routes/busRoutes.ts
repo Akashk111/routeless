@@ -28,6 +28,13 @@ router.post('/tick', (_req: Request, res: Response) => {
   res.json({ buses: store.getBuses() });
 });
 
+// GET bus location (TASK 7: GET /api/buses/:id/location)
+router.get('/:id/location', (req: Request, res: Response) => {
+  const loc = store.getBusLocation(req.params.id);
+  if (!loc) return res.status(404).json({ error: 'Bus location not found' });
+  res.json({ location: loc });
+});
+
 // GET bus by id
 router.get('/:id', (req: Request, res: Response) => {
   const bus = store.getBusById(req.params.id);

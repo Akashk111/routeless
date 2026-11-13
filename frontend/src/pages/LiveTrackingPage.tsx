@@ -78,11 +78,12 @@ const ROUTE_COLORS: Record<string, string> = {
 export const LiveTrackingPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const highlightedBusId = searchParams.get('bus');
+  const highlightedRouteId = searchParams.get('route');
 
   const [buses, setBuses] = useState<Bus[]>([]);
   const [routes, setRoutes] = useState<Route[]>([]);
   const [selectedBus, setSelectedBus] = useState<Bus | null>(null);
-  const [filterRoute, setFilterRoute] = useState<string>('all');
+  const [filterRoute, setFilterRoute] = useState<string>(highlightedRouteId || 'all');
   const [filterType, setFilterType] = useState<string>('all');
   const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -329,10 +330,18 @@ export const LiveTrackingPage: React.FC = () => {
                     <span className="text-[10px] uppercase font-bold text-slate-400">
                       {selectedBus.busType} • {selectedBus.operator}
                     </span>
-                    <h3 className="text-base font-extrabold text-navy-900 flex items-center gap-1.5">
+                    <h3 className="text-base font-extrabold text-navy-900 flex items-center gap-1.5 flex-wrap">
                       <span>{selectedBus.busNumber}</span>
                       <span className="text-xs font-normal text-slate-500">({selectedBus.busName})</span>
                     </h3>
+                    <div className="mt-1 flex items-center gap-2">
+                      <span className="px-2 py-0.5 bg-amber-50 text-amber-800 font-mono text-[10px] font-bold border border-amber-300 rounded">
+                        Reg: {selectedBus.registrationNumber || 'KA-19-F-1401'}
+                      </span>
+                      <span className="px-2 py-0.5 bg-emerald-50 text-emerald-800 text-[10px] font-bold border border-emerald-300 rounded">
+                        DEMO GPS SIMULATOR
+                      </span>
+                    </div>
                   </div>
                   <StatusBadge status={selectedBus.status} size="md" />
                 </div>
